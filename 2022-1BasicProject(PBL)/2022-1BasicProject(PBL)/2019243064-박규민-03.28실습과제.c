@@ -64,7 +64,15 @@ void  main()
 
 void printList(NODE* walker)
 {
-	if (walker == NULL)
+	NODE* print_current=NULL;		//지금 이거 임시로 만든것임
+	print_current = walker;
+	while (print_current != NULL)
+	{
+		printf("%s %d\n", walker->name, walker->age);
+		print_current = print_current->next;
+	}
+	printf("\n\n");
+	/*if (walker == NULL)
 	{
 		printf("==End of Print====\n");
 	}
@@ -72,7 +80,7 @@ void printList(NODE* walker)
 	{
 		printf("%s %d\n", walker->name, walker->age);
 		printList(walker->next);
-	}
+	}*/
 }
 
 void usercheck(NODE* checker)		//자! 이것은 유저가 입력한 이름에서 해당 이름보다 나이가 적은 사람을 표시하는 함수입니다!
@@ -177,7 +185,13 @@ NODE* delData(NODE* del_list)
 
 	if (strcmp(current->name, delname) == 0)	//지우려는 노드가 첫번째 노트일 경우 실행하는 것
 	{
-		del_list = current->next;
+		del_list = current->next;		//노드의 시작부분을 current->next로 하였는데 계속 시작부분 원점으로 돌아가서 출력함(free해도 free한 부분을 나타냄;;)
+		free(current);
+		
+		current = follow = del_list;
+		printList(del_list);
+
+		return del_list;
 		/*free(current);
 		
 		printList(del_list);*/
