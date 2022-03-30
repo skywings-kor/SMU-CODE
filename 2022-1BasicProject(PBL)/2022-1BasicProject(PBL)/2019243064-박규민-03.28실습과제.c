@@ -1,5 +1,5 @@
 //2019243064 컴퓨터공학부-데이터공학-박규민
-//2022-03-23 Test Debug End;
+//2022-03-30 Test Debug End;
 
 #include <stdio.h>
 #include <stdlib.h>  //malloc함수를 위해 
@@ -38,13 +38,14 @@ void  main()
 		{
 			list=loadData(list);	//데이터 값 입력한걸 노드에 넣어주고
 			printList(list);		//넣고나면 제대로 넣어지고 정렬까지 되었는지 확인 스크린 띄어주고
-		}
+		}			//
 
 		else if (inuser == 2)		//노드 삭제부분
 		{
 			printf("지우기전 리스트를 보여드립니다.\n");
 			printList(list);
-			delData(list);
+			list=delData(list);		//헤헤... 교수님 죄송합니다... 이런 식도 안넣고 여쭤봐서... 당연한데...ㅠㅠㅠㅠ 더욱 분발하겠습니다..
+			
 		}
 
 		else if (inuser == 3)		//이름 넣으면 이름하고 나이 띄어주어서 찾아주는 부분
@@ -181,13 +182,10 @@ NODE* delData(NODE* del_list)
 		
 		del_list= current->next;		//노드의 시작부분을 current->next로 하였는데 계속 시작부분 원점으로 돌아가서 출력함(free해도 free한 부분을 나타냄;;)
 		free(current);
+		current = NULL;
 		
-		printList(del_list);
 
-		return ;
-		/*free(current);
-		
-		printList(del_list);*/
+		return del_list;
 	}
 
 	else
