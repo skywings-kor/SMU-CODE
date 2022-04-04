@@ -48,5 +48,8 @@
     <ClCompile Include="2019243064-박규민-03.28실습과제.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="2019243064-박규민-04.04_과제1.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
