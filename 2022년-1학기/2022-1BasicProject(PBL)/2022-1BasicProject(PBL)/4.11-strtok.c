@@ -58,8 +58,10 @@
 int main()
 {
 	FILE* infile = fopen("RFID_Data.txt","r");
-	char buf[500];
-
+	char str[500];
+	char *temp[5];
+	int num1, num2, num3, num4, num5;
+	char* id, *type, *antena, *rssi, *time;
 	if (infile == NULL)
 	{
 		printf("error");
@@ -69,8 +71,29 @@ int main()
 	{
 		while(!feof(infile))
 		{
-			fgets(buf, sizeof(buf), infile);
-			printf("%s", buf);
+			fgets(str, sizeof(str), infile);
+			printf("%s", str);
+			
+			id = strtok(str, ",");
+			//num1 = atoi(id);
+			
+			type = strtok(NULL, ",");
+
+			antena = strtok(NULL, ",");
+			//num2 = atoi(antena);
+			
+			rssi = strtok(NULL, ",");
+			//num3 = atoi(rssi);
+			
+			time = strtok(NULL, ",");
+			//num4 = atoi(time);
+
+			printf("id=> %s \n", id);
+			printf("type=> %s \n", type);
+			printf("antena=> %s \n", antena);
+			printf("rssi=> %s \n", rssi);
+			printf("time=> %s \n", time);
+
 
 		}
 		fclose(infile);
