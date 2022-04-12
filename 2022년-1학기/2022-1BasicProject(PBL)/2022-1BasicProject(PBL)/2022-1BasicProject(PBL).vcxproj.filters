@@ -54,5 +54,8 @@
     <ClCompile Include="2019243064-박규민-숫자야구게임.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="4.11-strtok.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
