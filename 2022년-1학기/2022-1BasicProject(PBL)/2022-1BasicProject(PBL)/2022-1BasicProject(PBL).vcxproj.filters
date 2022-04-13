@@ -57,5 +57,11 @@
     <ClCompile Include="4.11-strtok.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="4.13.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="2022-1학기_중간고사대비.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
