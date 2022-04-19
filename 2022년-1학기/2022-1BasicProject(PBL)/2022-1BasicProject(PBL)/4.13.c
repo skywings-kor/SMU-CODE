@@ -59,7 +59,7 @@
 //			result = strtok(NULL, " =,T");
 //			strcpy(node->id, result);
 //
-//		}
+//		}	
 //
 //		else if (strcmp(result, "rssi") == 0)
 //		{
@@ -78,7 +78,7 @@
 //
 //		else
 //		{
-//			result = strtok(NULL, " ,T=");		//못찾으면 다음으로 넘어가게 해주는 거
+//			result = strtok(NULL, " ,T=");		//못찾으면 다음으로 넘어가게 해주는 거	
 //		}
 //
 //	}
