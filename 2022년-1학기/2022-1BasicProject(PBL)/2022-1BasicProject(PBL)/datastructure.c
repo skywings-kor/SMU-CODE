@@ -24,3 +24,32 @@
 //	printf("%s", bbb);
 //	return 0;
 //}
+
+#include <stdio.h>
+#include <stdlib.h>	
+#include <string.h>
+#pragma warning (disable:4996)
+int ret(int n);
+int main()
+{
+	ret(4);
+}
+
+int ret(int n)
+{
+	printf("%d \n", n);
+	if (n == 0)
+	{
+		return 0;
+	}
+
+	else if (n == 1)
+	{
+		return 1;
+	}
+	else
+	{
+		return (ret(n - 1) + ret(n - 2));
+	}
+
+}
