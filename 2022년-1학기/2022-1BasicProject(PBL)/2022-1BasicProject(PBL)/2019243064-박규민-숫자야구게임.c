@@ -10,41 +10,44 @@ typedef struct node
 	struct node* next;
 }NODE;
 
-NODE* randnumin(NODE* in_list);
-NODE* viewnode(NODE* walker);
+NODE* randnumin(NODE* in_list);		//연결리스트에 랜덤값 넣어주는 함수
+NODE* viewnode(NODE* walker);		//연결리스트 보여주는 함수(임시용)
 NODE* strikecorrectcheck(NODE*list,int f1,int f2,int f3,int f4,int f5,int strikecount);		//노드와 유저가 입력한 값 5개 받아와서 정답 맞는지 확인하는 함수
 NODE* ballcorrectcheck(NODE*list,int f1,int f2,int f3,int f4,int f5,int ballcount);		//노드와 유저가 입력한 값 5개 받아와서 정답 맞는지 확인하는 함수
 
 int main(void)
 {
-	
+	printf("<SMU-2019243064-컴퓨터공학부-박규민>\n\n");
 	NODE* list;
 	list= NULL;		//노드 리스트 초기화
 	int userin;		//유저가 5자리 입력한 값
 	int res5,res4, res3, res2, res1;		//사용자가 5자리 수 입력한거 나누기 위한 임시 변수
 	int ballcount = 0;		//볼카운트
 	int strikecount = 0;		//스트라이크 카운트
-	list=randnumin(list);
-	
-	viewnode(list);
 
-	for (int i = 0;; i++)
+	list=randnumin(list);		//메인 연결리스트에 랜덤값 넣어주는 함수 실행된 리턴값 넣어주기
+	
+
+	for (int i = 1;; i++)		//무한루프
 	{
+		printf("\nㅡㅡㅡㅡ%d번째 기회ㅡㅡㅡㅡ",i);
 		ballcount = 0;
 		strikecount = 0;
 		//유저가 다시 입력했을 때 기존 값이 남아있으면 안되니 초기화 해주기 위한 것
 	
 
-		printf("\n\n 맞추실 숫자5자리를 입력(1~9)->");
+		printf("\n맞추실 숫자5자리를 입력(1~9, tip:0을 입력시 종료됩니다)->");
+
 		scanf("%d", &userin);
-		if (99999 < userin)
+		if ((10000>userin) || (99999 < userin))
 		{
-			printf("<error> 숫자가 잘못 입력되었습니다.");
+			printf("\n<error> 숫자가 잘못 입력되었습니다.\n");
+			i = i - 1;
 		}
 
 		else if (userin == 0)
 		{
-			printf("프로그램을 종료합니다");
+			printf("\n!!프로그램을 종료합니다!!");
 			exit(0);
 		}
 		else
@@ -66,11 +69,12 @@ int main(void)
 
 			strikecount = strikecorrectcheck(list, res5, res4, res3, res2, res1, ballcount, strikecount);
 			ballcount = ballcorrectcheck(list, res5, res4, res3, res2, res1, ballcount, strikecount);
-			printf("\n\n%d스트라이크 %d볼입니다.", strikecount, ballcount);
+			printf("\n%d스트라이크 %d볼입니다.\n", strikecount, ballcount);
 
 			system("pause");
 		}
 		
+
 
 
 	}
@@ -88,7 +92,6 @@ NODE* randnumin(NODE* in_list)
 	int temp = 0;
 
 	srand(time(NULL));
-	printf("지금부터 랜덤값을 넣습니다.");
 
 	for (int i = 1; i<=5; i++)
 	{
@@ -106,7 +109,11 @@ NODE* randnumin(NODE* in_list)
 				temp = (rand() % 9) + 1;
 			}
 
-			checker = checker->next;
+			else
+			{
+				checker = checker->next;
+			}
+			
 		}
 
 
