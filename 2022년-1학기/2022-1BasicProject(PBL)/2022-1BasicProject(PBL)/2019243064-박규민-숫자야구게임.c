@@ -31,6 +31,7 @@ int main(void)
 	for (int i = 1;; i++)		//무한루프
 	{
 		printf("\nㅡㅡㅡㅡ%d번째 기회ㅡㅡㅡㅡ",i);
+		userin = 0;
 		ballcount = 0;
 		strikecount = 0;
 		//유저가 다시 입력했을 때 기존 값이 남아있으면 안되니 초기화 해주기 위한 것
@@ -39,17 +40,20 @@ int main(void)
 		printf("\n맞추실 숫자5자리를 입력(1~9, tip:0을 입력시 종료됩니다)->");
 
 		scanf("%d", &userin);
-		if ((10000>userin) || (99999 < userin))
+		if (userin == 0)
+		{
+			printf("\n!!프로그램을 종료합니다!!");
+			system("pause");
+			exit(0);
+		}
+
+		else if ((10000>userin) || (99999 < userin))
 		{
 			printf("\n<error> 숫자가 잘못 입력되었습니다.\n");
 			i = i - 1;
 		}
 
-		else if (userin == 0)
-		{
-			printf("\n!!프로그램을 종료합니다!!");
-			exit(0);
-		}
+		
 		else
 		{
 			res5 = userin / 10000;
