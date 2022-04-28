@@ -15,9 +15,88 @@ NODE* viewnode(NODE* walker);		//연결리스트 보여주는 함수(임시용)
 NODE* strikecorrectcheck(NODE*list,int f1,int f2,int f3,int f4,int f5,int strikecount);		//노드와 유저가 입력한 값 5개 받아와서 정답 맞는지 확인하는 함수
 NODE* ballcorrectcheck(NODE*list,int f1,int f2,int f3,int f4,int f5,int ballcount);		//노드와 유저가 입력한 값 5개 받아와서 정답 맞는지 확인하는 함수
 
+int loginpage(char userinid[20], char userinpw[20]);		//로그인 기능 함수
+int usercreate(char createid[20], char createpw[20]);
+
 int main(void)
 {
-	printf("<SMU-2019243064-컴퓨터공학부-박규민>\n\n");
+	printf("                                     <SMU-2019243064-컴퓨터공학부-박규민>\n\n");
+	//로그인 구간ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	int userlogin;		//유저 로그인할건지 회원가입할건지 비밀번호찾기할건지 프로그램 종료할건지 나누는 변수
+	int success;		//로그인 성공시 반환값 받는거
+	char userid[20];		//로그인->아이디 입력한거
+	char userpw[20];		//로그인->비번입력한거
+
+	char createid[20];
+	char createpw[20];
+	int createsuccess;
+
+	for (int k = 0;; k++)		//로그인이나 회원가입이나 비밀번호 찾기 실패시 돌아오게 하기위한 for문
+	{
+		system("cls");
+		success = 0;
+		createsuccess = 0;
+		userlogin = 0;
+
+		printf("                       <1> 로그인           <2> 회원가입           <3> 비밀번호 찾기           <0> 프로그램 종료");
+		scanf("%d", &userlogin);
+	
+		
+		if (userlogin == 1)		//로그인
+		{
+
+			printf("아이디를 입력해주세요: ");
+			scanf("%s", userid);
+
+			printf("비밀번호를 입력해주세요: ");
+			scanf("%s", userpw);
+
+			success=loginpage(userid,userpw);
+
+			if (success == 1)
+			{
+				printf("                       로그인 성공\n\n");
+				break;
+			}
+
+			else
+			{
+				printf("                       ID또는 PW가 잘못되었습니다\n\n");
+				system("pause");
+			}
+		}
+
+		else if (userlogin == 2)		//회원가입
+		{
+			printf("만드실 ID입력: ");
+			scanf("%s", createid);
+
+			printf("만드실 PW입력: ");
+			scanf("%s", createpw);
+
+			createsuccess=usercreate(createid, createpw);
+		}
+
+		else if (userlogin == 3)
+		{
+
+		}
+
+		else if (userlogin == 0)			//프로그램 종료
+		{
+			printf("프로그램을 종료합니다.");
+			system("pause");
+			exit(0);
+		}
+
+		else
+		{
+			printf("다시 입력해주세요");
+		}
+
+	}
+
+	
 	NODE* list;
 	list= NULL;		//노드 리스트 초기화
 	int userin;		//유저가 5자리 입력한 값
@@ -82,7 +161,6 @@ int main(void)
 
 
 	}
-
 
 }
 
@@ -253,4 +331,63 @@ NODE* ballcorrectcheck(NODE* list, int f1, int f2, int f3, int f4, int f5, int b
 
 
 	return ballcount;
+}
+
+//로그인 함수			로그인 함수				로그인 함수			로그인 함수					로그인 함수					로그인 함수
+int loginpage(char userinid[20], char userinpw[20])		
+{
+	FILE* fp;
+	fp = fopen("user.txt", "r");
+
+	char str[60];
+	char* id;
+	char* pw;
+	while (!feof(fp))
+	{
+		fgets(str, sizeof(str), fp);
+		id = strtok(str, " ");
+		pw = strtok(NULL, " ");
+
+		if ((strcmp(userinid, id) == 0) && (strcmp(userinpw, pw) == 0))
+		{
+			return 1;	//로그인에 성공할경우
+			break;
+		}
+
+
+	}
+
+	return 0;		//로그인에 실패할 경우
+
+}
+
+int usercreate(char createid[20], char createpw[20])
+{
+	FILE* fp;
+	fp = fopen("user.txt", "r");
+
+	char str[60];
+	char* id;
+	char* pw;
+	while (!feof(fp))
+	{
+		fgets(str, sizeof(str), fp);
+		id = strtok(str, " ");
+		pw = strtok(NULL, " ");
+
+		if (strcmp(createid, id) == 0)
+		{
+			return 1;		//같은 아이디가 이미 존재시
+			break;
+		}
+
+
+	}
+	//fp = fclose("user.txt");
+
+	fp = fopen("user.txt", "a");
+	//파일에 입력넣는거 구현해야함이어서
+	
+	
+
 }
