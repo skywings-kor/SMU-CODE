@@ -31,6 +31,8 @@ int main(void)
 	char createpw[20];
 	int createsuccess;
 
+	char findid[20];
+
 	for (int k = 0;; k++)		//로그인이나 회원가입이나 비밀번호 찾기 실패시 돌아오게 하기위한 for문
 	{
 		system("cls");
@@ -75,10 +77,27 @@ int main(void)
 			scanf("%s", createpw);
 
 			createsuccess=usercreate(createid, createpw);
+
+			if (createsuccess == 1)
+			{
+				printf("동일한 아이디가 있어 회원가입에 실패하였습니다");
+				system("pause");
+			}
+
+			else
+			{
+				printf("회원가입 성공!");
+				system("pause");
+			}
+
 		}
 
-		else if (userlogin == 3)
+		else if (userlogin == 3)		//비밀번호 찾기
 		{
+			printf("찾으실 ID입력: ");
+			scanf("%s", findid);
+
+
 
 		}
 
@@ -91,7 +110,7 @@ int main(void)
 
 		else
 		{
-			printf("다시 입력해주세요");
+		
 		}
 
 	}
@@ -384,10 +403,22 @@ int usercreate(char createid[20], char createpw[20])
 
 	}
 	//fp = fclose("user.txt");
+	fclose(fp);
 
 	fp = fopen("user.txt", "a");
 	//파일에 입력넣는거 구현해야함이어서
 	
+	fputs(createid, fp);
+	fputs(" ", fp);
+	fputs(createpw, fp);
+
+	fputs("\n", fp);
+
+
+	fclose(fp);
+
+	return 0;
+
 	
 
 }
