@@ -44,7 +44,7 @@ int main(void)
 	for (int k = 0;; k++)		//로그인이나 회원가입이나 비밀번호 찾기 실패시 돌아오게 하기위한 for문
 	{
 		system("cls");
-		printf("                                     <SMU-2019243064-컴퓨터공학부-박규민>\n\n");
+		printf("                               <SMU-2019243064-컴퓨터공학부-박규민-숫자야구게임>\n\n");
 		success = 0;
 		createsuccess = 0;
 		userlogin = 0;
@@ -127,7 +127,7 @@ int main(void)
 
 	int highnum;		//최단 횟수 저장 변수
 	system("cls");		//한번 싹 깨끗하게 해줍니다(콘솔창)
-	printf("                                     <SMU-2019243064-컴퓨터공학부-박규민>\n\n");
+	printf("                               <SMU-2019243064-컴퓨터공학부-박규민>-숫자야구게임\n\n");
 	highnum=highscore(userid);		//사용자가 로그인한 ID로 저장되어있는 점수를 찾아 최단 횟수가 표시됩니다(저장 되어있는 점수가 없을 경우 0이 출력)
 	printf("                                                                               <최단횟수 : %d번>\n\n",highnum);
 	NODE* list;		//연결리스트 선언~!
@@ -138,7 +138,13 @@ int main(void)
 	int strikecount = 0;		//스트라이크 카운트
 
 	list=randnumin(list);		//메인 연결리스트에 랜덤값 넣어주는 함수 실행된 리턴값 넣어주기
-	viewnode(list);
+
+
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+	//printf("테스트 및 수정+디버깅용을 위한 정답표출:");		//테스트 컴파일을 위한 정답 알려주는 부분
+	//viewnode(list);	//테스트 컴파일을 위한 정답 알려주는 함수
+	//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
 
 	for (int i = 1;; i++)		//무한루프
 	{
@@ -310,6 +316,7 @@ NODE* randnumin(NODE* in_list)
 
 NODE* viewnode(NODE* walker)		//너무 제가 못맞춰서 랜덤값 편히 보고 테스트 하려고 만든 일종의 정답지 코드입니다...(ㅠㅠ...)
 {
+	
 	if (walker != NULL)
 	{
 		printf("%d ", walker->correct);
