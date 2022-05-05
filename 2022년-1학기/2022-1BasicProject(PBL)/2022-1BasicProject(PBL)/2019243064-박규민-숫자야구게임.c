@@ -1,3 +1,6 @@
+////2019243064 컴퓨터공학부-데이터공학-박규민
+////2022-05-04 Test Debug End;
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,8 +9,8 @@
 
 typedef struct node 
 {
-	int correct;
-	struct node* next;
+	int correct;		//무작위 숫자 저장하기 위한 int형 변수
+	struct node* next;		//노드 다음 구간 가리키기 위한 선언
 }NODE;
 
 NODE* randnumin(NODE* in_list);		//연결리스트에 랜덤값 넣어주는 함수
@@ -16,25 +19,26 @@ NODE* strikecorrectcheck(NODE*list,int f1,int f2,int f3,int f4,int f5,int strike
 NODE* ballcorrectcheck(NODE*list,int f1,int f2,int f3,int f4,int f5,int ballcount);		//노드와 유저가 입력한 값 5개 받아와서 정답 맞는지 확인하는 함수
 
 int loginpage(char userinid[20], char userinpw[20]);		//로그인 기능 함수
-int usercreate(char createid[20], char createpw[20]);
-int userfind(char findid[20]);
-int highscore(char loginid[20]);
-int scoresave(char loginid[20], char inscore);
+int usercreate(char createid[20], char createpw[20]);		//회원가입 기능 함수
+int userfind(char findid[20]);		//비밀번호 찾는 기능 함수
+int highscore(char loginid[20]);		//제일 잘 나온 점수 표시해주는 함수
+int scoresave(char loginid[20], char inscore);		//정답 맞추고나면 점수 저장해주는 함수
 
 int main(void)
 {
 	
 	//로그인 구간ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 	int userlogin;		//유저 로그인할건지 회원가입할건지 비밀번호찾기할건지 프로그램 종료할건지 나누는 변수
+
 	int success;		//로그인 성공시 반환값 받는거
 	char userid[20];		//로그인->아이디 입력한거
 	char userpw[20];		//로그인->비번입력한거
 
-	char createid[20];
-	char createpw[20];
-	int createsuccess;
+	char createid[20];		//회원가입->아이디 입력 받은거
+	char createpw[20];		//회원가입->비밀번호 입력 받은거
+	int createsuccess;		//회원가입 성공시 반환받는 변수
 
-	char findid[20];
+	char findid[20];		//비밀번호찾기->아이디 입력 받은거
 
 
 	for (int k = 0;; k++)		//로그인이나 회원가입이나 비밀번호 찾기 실패시 돌아오게 하기위한 for문
@@ -58,9 +62,9 @@ int main(void)
 			printf("비밀번호를 입력해주세요: ");
 			scanf("%s", userpw);
 
-			success=loginpage(userid,userpw);
+			success=loginpage(userid,userpw);		//로그인기능을 담당하는 함수에서 로그인 성공시 반환받는 부분입니다.
 
-			if (success == 1)
+			if (success == 1)		
 			{
 				printf("                       로그인 성공\n\n");
 				break;
@@ -439,6 +443,7 @@ int loginpage(char userinid[20], char userinpw[20])
 
 }
 
+//회원가입 함수		회원가입 함수		회원가입 함수		회원가입 함수		회원가입 함수		회원가입 함수		회원가입 함수
 int usercreate(char createid[20], char createpw[20])
 {
 	FILE* fp;
@@ -482,6 +487,7 @@ int usercreate(char createid[20], char createpw[20])
 
 }
 
+//비밀번호 찾기 함수		비밀번호 찾기 함수				비밀번호 찾기 함수				비밀번호 찾기 함수				비밀번호 찾기 함수
 int userfind(char findid[20])
 {
 	FILE* fp;
@@ -512,6 +518,7 @@ int userfind(char findid[20])
 	return 0;
 }
 
+//로그인한 ID로 제일 단시간에 성공한 횟수 표시				로그인한 ID로 제일 단시간에 성공한 횟수 표시				로그인한 ID로 제일 단시간에 성공한 횟수 표시
 int highscore(char loginid[20])		//해당 ID의 최고점수(횟수) 불러오는거
 {
 	FILE* fp;
@@ -519,45 +526,48 @@ int highscore(char loginid[20])		//해당 ID의 최고점수(횟수) 불러오는거
 
 	char str[60];
 	char* resid;
-	char* resscore;
-	int changescore;
 	int highnum = 1000;		//점수가 1000점(최악점수)	
 	while (!feof(fp))
 	{
+		char* resscore;
+		int changescore;
 		fgets(str, sizeof(str), fp);
 		resid = strtok(str, " ");
 		resscore = strtok(NULL, " \n");
 		
 		changescore = atoi(resscore);
-		if ((strcmp(resid, loginid) == 0) && (highnum > changescore))		//아이디가 같고 현재 파일이 끝나기전 최단횟수가 더 작은게 나타날경우 저장
+		if ((strcmp(resid, loginid) == 0)&&(changescore<highnum))		//아이디가 같고 현재 파일이 끝나기전 최단횟수가 더 작은게 나타날경우 저장
 		{
 			highnum = changescore;
-		
 		}
-
+		
 	}
-
+	
 	fclose(fp);
-
-	if (highnum = 1000)
+	
+	if (highnum == 1000)
 	{
 		return 0;
 	}
 
-	return highnum;
+	else
+	{
+		return highnum;
+	}
+	
 }
 
 int scoresave(char loginid[20], char inscore)
 {
 	FILE* fp;
 	fp = fopen("score.txt","a");
-
+	fputs("\n", fp);
 	fputs(loginid, fp);
 	fputs(" ", fp);
 
 	fputc(inscore, fp);
 
-	fputs("\n", fp);
+	
 
 
 	fclose(fp);
