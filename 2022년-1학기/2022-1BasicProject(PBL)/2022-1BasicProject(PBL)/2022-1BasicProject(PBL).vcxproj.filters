@@ -60,5 +60,8 @@
     <ClCompile Include="2022-1학기_중간고사대비.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="2019243064-박규민-RFID데이터분석프로그램.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

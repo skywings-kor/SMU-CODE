@@ -161,6 +161,7 @@
     <ClCompile Include="2019243064-박규민-C언어역량평가6번.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="2019243064-박규민-RFID데이터분석프로그램.c" />
     <ClCompile Include="2019243064-박규민-숫자야구게임.c" />
     <ClCompile Include="2022-1학기_중간고사대비.c" />
     <ClCompile Include="4.11-strtok.c" />
