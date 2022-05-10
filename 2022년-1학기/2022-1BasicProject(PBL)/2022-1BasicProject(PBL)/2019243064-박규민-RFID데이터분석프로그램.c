@@ -17,11 +17,14 @@ TAGINFO* referenceInlist(TAGINFO* taglist, char inid[27], double intime, float i
 TAGINFO* targetRead(TAGINFO* tagreadlist, char targetid[27]);
 TAGINFO* targetInlist(TAGINFO* taglist, char inid[27], double intime, float inrssi);
 
+TAGINFO* estimationRead(TAGINFO* estimationlist, TAGINFO* referencelist, float targetrssi);
+TAGINFO* estimationInlist(TAGINFO* taglist, char inid[27], double intime, float inrssi);
+
 TAGINFO* listInview(TAGINFO* walker);
 
 int main()
 {
-	TAGINFO* referencelist = NULL,*targetlist=NULL;
+	TAGINFO* referencelist = NULL,*targetlist=NULL,*estimationlist=NULL;
 	int interchoice;
 	char targetID[27] = "0x35E0170044CF0D590000F5A5";
 
@@ -65,8 +68,11 @@ int main()
 
 		scanf("%d", &interchoice);
 
+
+
 		if (interchoice == 1)		//참조 태그 분석 함수실행
 		{
+			referencelist = NULL, targetlist = NULL, estimationlist = NULL;
 			if (referencelist == NULL)
 			{
 				for (int j = 0; j < 60; j++)
@@ -83,6 +89,7 @@ int main()
 
 		else if (interchoice == 2)		//타겟 태그 분석 함수실행
 		{
+			referencelist = NULL, targetlist = NULL, estimationlist = NULL;
 			if (targetlist == NULL)
 			{
 				targetlist = targetRead(targetlist, targetID);
@@ -94,9 +101,24 @@ int main()
 		}
 
 		else if (interchoice == 3)
-
 		{
+			referencelist = NULL, targetlist = NULL, estimationlist = NULL;
+			if (referencelist == NULL)		//참조 태그 분석 함수실행
+			{
+				for (int j = 0; j < 60; j++)
+				{
+					referencelist = referenceRead(referencelist, referenceIDs[j]);
+				}
+			}
 
+			if (targetlist == NULL)		//타겟 태그 분석 함수 실행
+			{
+				targetlist = targetRead(targetlist, targetID);
+			}
+
+			estimationlist = estimationRead(estimationlist,referencelist,targetlist->rssi);
+			listInview(estimationlist);
+			
 		}
 
 
@@ -114,7 +136,7 @@ int main()
 
 }
 
-
+//1번 기능				1번 기능				1번 기능				1번 기능				1번 기능				1번 기능				
 TAGINFO* referenceRead(TAGINFO* tagreadlist, char referenceid[27])
 {
 	char str[200];
@@ -251,6 +273,8 @@ TAGINFO* referenceInlist(TAGINFO* taglist,char inid[27],double intime,float inrs
 
 }
 
+
+//2번 기능			//2번 기능			//2번 기능			//2번 기능			//2번 기능			//2번 기능			
 TAGINFO* targetRead(TAGINFO* tagreadlist, char targetid[27])
 {
 	char str[200];
@@ -390,7 +414,70 @@ TAGINFO* targetInlist(TAGINFO* taglist, char inid[27], double intime, float inrs
 }
 
 
+//3번 기능			//3번 기능			//3번 기능			//3번 기능			//3번 기능			//3번 기능
+TAGINFO* estimationRead(TAGINFO* estimationlist, TAGINFO* referencelist, float targetrssi)
+{
+	TAGINFO* current = NULL,*follow=NULL,*newinfo=NULL ,*referencewalker=NULL;
+	referencewalker = referencelist;
+	while (referencewalker != NULL)		//절대값으로 만들기 위한 코드 부분
+	{
+		
+		referencewalker->rssi = referencewalker->rssi - targetrssi;
 
+		if (0 > referencewalker->rssi)		//절대값 전환을 위한 코드
+		{
+			referencewalker->rssi = referencewalker->rssi * (-1);
+		}
+		
+		referencewalker = referencewalker->next;
+	}
+	
+
+	referencewalker = referencelist;
+	while (referencewalker != NULL)
+	{
+		current = estimationlist;
+		follow = estimationlist;
+
+		newinfo = (TAGINFO*)malloc(sizeof(TAGINFO));
+
+		strcpy(newinfo->id, referencewalker->id);
+		newinfo->rssi = referencewalker->rssi;
+		newinfo->identifiedTime = referencewalker->identifiedTime;
+		
+		
+
+		while ((current != NULL)&& (current->rssi < newinfo->rssi))
+		{
+			follow = current;
+			current = current->next;
+		}
+		newinfo->next = current;
+
+		if (current == estimationlist)
+		{
+			estimationlist = newinfo;
+		}
+		else
+		{
+			follow->next = newinfo;
+		}
+
+		referencewalker = referencewalker->next;
+		
+	}
+	
+
+
+	return estimationlist;
+}
+
+
+TAGINFO* estimationInlist(TAGINFO* taglist, char inid[27], double intime, float inrssi)
+{
+
+	return estimationInlist;
+}
 
 
 
