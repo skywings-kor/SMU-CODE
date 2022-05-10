@@ -11,9 +11,11 @@ typedef struct taginfo
 	struct taginfo* next;
 } TAGINFO;
 
-TAGINFO* referenceRead(TAGINFO*tagreadlist, char referenceid[60][27]);
-TAGINFO* referenceInlist(TAGINFO*taginlist, char instr[200]);
+TAGINFO* referenceRead(TAGINFO*tagreadlist, char referenceid[27]);
 
+TAGINFO* referenceInlist(TAGINFO* taglist, char inid[27], double intime, float inrssi);
+
+TAGINFO* referenceInview(TAGINFO* walker);
 
 int main()
 {
@@ -66,9 +68,11 @@ int main()
 			for (int j = 0; j < 60; j++)
 			{
 				list=referenceRead(list,referenceIDs[j]);
+				
 			}
-			
 
+			referenceInview(list);
+			
 		}
 
 		else if (interchoice = 2)
@@ -105,38 +109,145 @@ TAGINFO* referenceRead(TAGINFO* tagreadlist, char referenceid[27])
 
 	FILE* fp;
 	fp = fopen("RFID_Data.txt", "r");
+	
+	int count = 0;
+	float sumrssi = 0, sumhour = 0, summinute = 0;
+	float sumseconds = 0;
 
+	float timesum = 0;
 	while (!feof(fp))
 	{
 		fgets(str, sizeof(str), fp);	//rfid_data.txt파일에서 한줄을 가져옴
-		res = strtok(str, " =,T");
-		res = strtok(NULL, " =,T");
+		res = strtok(str, " =,T\n");
+		res = strtok(NULL, " =,T\n");
+		res = strtok(NULL, " =,T\n");
 		
 		if (strcmp(referenceid, res) == 0)
 		{
+			count = count + 1;
+
 			while (res != NULL)
 			{
 
+
 				if (strcmp(res, "rssi") == 0)
 				{
+					res = strtok(NULL, " =,T\n");
+					sumrssi = atoi(res) + sumrssi;
+					
+				}
+
+				else if (strcmp(res, "time") == 0)
+				{
+					res = strtok(NULL, " =,T");
+					
+					res = strtok(NULL, " =,T:");
+					sumhour = atoi(res)+sumhour;
+					
+					res = strtok(NULL, " =,T:");
+					summinute = atoi(res)+summinute;
+
+					res = strtok(NULL, " =,T:");
+					sumseconds = atof(res)+sumseconds;
 
 				}
 
-
+				else
+				{
+					res = strtok(NULL, " =,T\n");
+				}
 			}
+
 		}
+
+		
 
 
 
 	}
 
+	if (sumrssi == 0)
+	{
+		printf("해당되는 데이터가 존재하지 않습니다\n");
+		return tagreadlist;
+	}
 
-	return tagreadlist;
+	else
+	{
+		sumrssi = sumrssi / count;	//rssi평균
+
+		timesum = sumhour * 60;	//시를 분으로 변환 넣어두기
+		summinute = (summinute + timesum) * 60;		//분을 초로 변환
+		
+		timesum = summinute + sumseconds;		//초로 변환한거를 기존 초와 합하기
+
+		
+		timesum = timesum / count;
+		
+		//시간으로 재전환 테스트
+		//int test, test1;
+		//float test2;
+
+		//test = (timesum / 60) / 60;
+
+		//timesum = timesum - test * 60 * 60;
+
+		//test1 = timesum / 60;
+
+		//timesum = timesum - test1 * 60;
+
+		//printf("시간:%d 분:%d 초:%f \n", test, test1, timesum);
+
+		tagreadlist = referenceInlist(tagreadlist, referenceid, timesum,sumrssi);
+
+		return tagreadlist;
+	}
+	
 }
 
-TAGINFO* referenceInlist(TAGINFO* taglist,char instr[200])
+TAGINFO* referenceInlist(TAGINFO* taglist,char inid[27],double intime,float inrssi)
 {
-	TAGINFO* newtaginfo=NULL;
+	TAGINFO* newtaginfo,*current=NULL,*follow=NULL;
+	current = taglist;
+	newtaginfo = (TAGINFO*)malloc(sizeof(TAGINFO));
+
+	strcpy(newtaginfo->id, inid);
+	newtaginfo->rssi = inrssi;
+	newtaginfo->identifiedTime = intime;
 
 
+	while (current != NULL)
+	{
+		follow = current;
+		current = current->next;
+	}
+	newtaginfo->next = current;
+	if (current == taglist)
+	{
+		taglist = newtaginfo;
+	}
+
+	else
+	{
+		follow->next = newtaginfo;
+	}
+
+	return taglist;
+
+}
+
+
+TAGINFO* referenceInview(TAGINFO* walker)
+{
+	if (walker != NULL)
+	{
+		printf("%s ", walker->id);
+		printf("%f ", walker->rssi);
+		printf("%f \n", walker->identifiedTime);
+	}
+
+	else
+	{
+		return walker;
+	}
 }
