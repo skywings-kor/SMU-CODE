@@ -18,14 +18,18 @@ TAGINFO* targetRead(TAGINFO* tagreadlist, char targetid[27]);
 TAGINFO* targetInlist(TAGINFO* taglist, char inid[27], double intime, float inrssi);
 
 TAGINFO* estimationRead(TAGINFO* estimationlist, TAGINFO* referencelist, float targetrssi);
-TAGINFO* estimationInlist(TAGINFO* taglist, char inid[27], double intime, float inrssi);
 
+
+void estimationCal(int inxres,int inyres, char finalid[27],int rescount);
+
+TAGINFO* estimationview(TAGINFO* estimationlist);
 TAGINFO* listInview(TAGINFO* walker);
 
 int main()
 {
-	TAGINFO* referencelist = NULL,*targetlist=NULL,*estimationlist=NULL;
+	TAGINFO* referencelist = NULL,*targetlist=NULL,*estimationlist=NULL,*mainwalker=NULL;
 	int interchoice;
+
 	char targetID[27] = "0x35E0170044CF0D590000F5A5";
 
 	char referenceIDs[60][27] =
@@ -58,6 +62,7 @@ int main()
 
 	for (int i = 0;; i++)
 	{
+		
 		system("cls");
 		printf("					Made by-2019243064 박규민\n\n\n\n");
 		printf("				<실행하고 싶은 시스템 번호를 입력해주시면 됩니다>\n\n");
@@ -99,9 +104,15 @@ int main()
 
 
 		}
+		
 
 		else if (interchoice == 3)
 		{
+			int xres = 0;
+			int yres = 0;
+
+			int esticount = 0;
+			int knnuser = 0;
 			referencelist = NULL, targetlist = NULL, estimationlist = NULL;
 			if (referencelist == NULL)		//참조 태그 분석 함수실행
 			{
@@ -117,8 +128,45 @@ int main()
 			}
 
 			estimationlist = estimationRead(estimationlist,referencelist,targetlist->rssi);
-			listInview(estimationlist);
+			estimationview(estimationlist);
 			
+			printf("참조할 데이터 개수를 입력해주세요: ");
+			scanf("%d", &knnuser);
+
+			if ((knnuser < 1) || (60 < knnuser))
+			{
+				printf("입력하신 개수가 참조 범위를 벗어납니다");
+			}
+
+			mainwalker = estimationlist;
+			
+
+			for (int f = 0; f <= knnuser - 1; f++)
+			{
+				esticount = 0;
+
+				for (int e = 0;e<60; e++)
+				{
+					if (strcmp(mainwalker->id, referenceIDs[e]) == 0)
+					{
+						break;
+					}
+					else
+					{
+						esticount = esticount + 1;
+					}
+					
+				}
+
+				xres = referecePoints[esticount][0] + xres;
+				yres = referecePoints[esticount][1] + yres;
+				
+				mainwalker = mainwalker->next;
+				
+			}
+			
+			estimationCal(xres, yres, mainwalker->id,esticount);
+
 		}
 
 
@@ -472,13 +520,34 @@ TAGINFO* estimationRead(TAGINFO* estimationlist, TAGINFO* referencelist, float t
 	return estimationlist;
 }
 
-
-TAGINFO* estimationInlist(TAGINFO* taglist, char inid[27], double intime, float inrssi)
+TAGINFO* estimationview(TAGINFO* estimationlist)
 {
 
-	return estimationInlist;
+	if (estimationlist != NULL)
+	{
+		printf("아이디:%s   ", estimationlist->id);
+		printf("rssi근접도:%.1f   \n", estimationlist->rssi);
+		estimationview(estimationlist->next);
+	}
+
+	else
+	{
+		return estimationlist;
+	}
 }
 
+void estimationCal(int inxres, int inyres, char finalid[27], int rescount)
+{
+	int fx=0;
+	int fy=0;
+
+	fx = inxres / rescount;
+	fy = inyres / rescount;
+
+	printf("타겟ID의 최종 예측 좌표는 X->%d, Y->%d 입니다", fx, fy);
+
+
+}
 
 
 
@@ -487,7 +556,6 @@ TAGINFO* estimationInlist(TAGINFO* taglist, char inid[27], double intime, float 
 
 TAGINFO* listInview(TAGINFO* walker)
 {
-	double hour=0, minute=0, seconds=0;
 	if (walker != NULL)
 	{
 		printf("아이디: %s   ", walker->id);
