@@ -29,7 +29,7 @@ int main()
 {
 	TAGINFO* referencelist = NULL,*targetlist=NULL,*estimationlist=NULL,*mainwalker=NULL;
 	int interchoice;
-
+	
 	char targetID[27] = "0x35E0170044CF0D590000F5A5";
 
 	char referenceIDs[60][27] =
@@ -62,7 +62,6 @@ int main()
 
 	for (int i = 0;; i++)
 	{
-		
 		system("cls");
 		printf("					Made by-2019243064 박규민\n\n\n\n");
 		printf("				<실행하고 싶은 시스템 번호를 입력해주시면 됩니다>\n\n");
@@ -77,6 +76,7 @@ int main()
 
 		if (interchoice == 1)		//참조 태그 분석 함수실행
 		{
+			printf("					<참조 태그 데이터가 존재하지 않는 ID목록>\n");
 			referencelist = NULL, targetlist = NULL, estimationlist = NULL;
 			if (referencelist == NULL)
 			{
@@ -86,20 +86,22 @@ int main()
 
 				}
 			}
-			
-
+			printf("\n");
+			printf("					<참조 태그 데이터 분석 목록>\n");
 			listInview(referencelist);		//연결리스트에 넣은 참조 데이터 보기 위한 함수
 			
 		}
 
 		else if (interchoice == 2)		//타겟 태그 분석 함수실행
 		{
+			printf("					<타겟 태그 데이터가 존재하지 않는 ID목록>\n");
 			referencelist = NULL, targetlist = NULL, estimationlist = NULL;
 			if (targetlist == NULL)
 			{
 				targetlist = targetRead(targetlist, targetID);
 			}
-			
+			printf("\n");
+			printf("					<타겟 태그 데이터 분석 목록>\n");
 			listInview(targetlist);
 
 
@@ -108,24 +110,29 @@ int main()
 
 		else if (interchoice == 3)
 		{
+			
 			int xres = 0;
 			int yres = 0;
 
 			int esticount = 0;
 			int knnuser = 0;
 			referencelist = NULL, targetlist = NULL, estimationlist = NULL;
+			printf("					<참조 태그 데이터가 존재하지 않는 ID목록>\n");
 			if (referencelist == NULL)		//참조 태그 분석 함수실행
 			{
+
 				for (int j = 0; j < 60; j++)
 				{
 					referencelist = referenceRead(referencelist, referenceIDs[j]);
 				}
 			}
-
+			printf("\n\n");
 			if (targetlist == NULL)		//타겟 태그 분석 함수 실행
 			{
 				targetlist = targetRead(targetlist, targetID);
 			}
+
+			printf("					<RSSI근접도 분석 목록>\n");
 
 			estimationlist = estimationRead(estimationlist,referencelist,targetlist->rssi);
 			estimationview(estimationlist);
@@ -139,12 +146,12 @@ int main()
 			}
 
 			mainwalker = estimationlist;
-			
+			int knncount=0;
 
 			for (int f = 0; f <= knnuser - 1; f++)
 			{
 				esticount = 0;
-
+				knncount = knncount + 1;
 				for (int e = 0;e<60; e++)
 				{
 					if (strcmp(mainwalker->id, referenceIDs[e]) == 0)
@@ -161,11 +168,13 @@ int main()
 				xres = referecePoints[esticount][0] + xres;
 				yres = referecePoints[esticount][1] + yres;
 				
+				printf("%d ", xres);
+				printf("%d\n", yres);
 				mainwalker = mainwalker->next;
 				
 			}
 			
-			estimationCal(xres, yres, mainwalker->id,esticount);
+			estimationCal(xres, yres, mainwalker->id, knncount);
 
 		}
 
@@ -273,7 +282,7 @@ TAGINFO* referenceRead(TAGINFO* tagreadlist, char referenceid[27])
 
 	if (sumrssi == 0)
 	{
-		//printf("해당되는 데이터가 존재하지 않습니다\n");
+		printf("ID: %s\n", referenceid);
 		return tagreadlist;
 	}
 
@@ -411,7 +420,7 @@ TAGINFO* targetRead(TAGINFO* tagreadlist, char targetid[27])
 
 	if (sumrssi == 0)
 	{
-		printf("해당되는 데이터가 존재하지 않습니다\n");
+		printf("ID: %s\n", targetid);
 		return tagreadlist;
 	}
 
@@ -525,8 +534,8 @@ TAGINFO* estimationview(TAGINFO* estimationlist)
 
 	if (estimationlist != NULL)
 	{
-		printf("아이디:%s   ", estimationlist->id);
-		printf("rssi근접도:%.1f   \n", estimationlist->rssi);
+		printf("ID:%s\n", estimationlist->id);
+		printf("rssi근접도:%.1f   \n\n", estimationlist->rssi);
 		estimationview(estimationlist->next);
 	}
 
@@ -544,7 +553,7 @@ void estimationCal(int inxres, int inyres, char finalid[27], int rescount)
 	fx = inxres / rescount;
 	fy = inyres / rescount;
 
-	printf("타겟ID의 최종 예측 좌표는 X->%d, Y->%d 입니다", fx, fy);
+	printf("				타겟ID의 최종 예측 좌표는 X: %d, Y: %d 입니다", fx, fy);
 
 
 }
@@ -558,9 +567,9 @@ TAGINFO* listInview(TAGINFO* walker)
 {
 	if (walker != NULL)
 	{
-		printf("아이디: %s   ", walker->id);
-		printf("평균rssi:%.1f   ", walker->rssi);
-		printf("평균인터벌: %.3lf \n",walker->identifiedTime);
+		printf("ID: %s\n", walker->id);
+		printf("RSSI:%.1f   ", walker->rssi);
+		printf("인터벌: %.3lf \n\n",walker->identifiedTime);
 
 		listInview(walker->next);
 	}
