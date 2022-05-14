@@ -28,6 +28,10 @@ TAGINFO* listInview(TAGINFO* walker);		//1번, 2번 기능에서 진행한 것을 출력하기 
 int main()
 {
 	TAGINFO* referencelist = NULL,*targetlist=NULL,*estimationlist=NULL,*mainwalker=NULL;
+	//referencelist-> 참조데이터 연결리스트
+	//targetlist-> 타겟데이터 연결리스트
+	//estimationlist->타겟 ID의 RSSI근접도 연결리스트
+	//mainwalker-> 각 연결리스트 추출을 위한 용도
 	int interchoice;		//사용자가 사용자 메뉴 선택할 때 들어갈 변수
 	
 	char targetID[27] = "0x35E0170044CF0D590000F5A5";		//타겟 ID
@@ -68,8 +72,9 @@ int main()
 	{
 		system("cls");		//화면 싹 깨끗해지게 해주는 기능
 
-		printf("					Made by-2019243064 박규민\n\n\n\n");
-		printf("				<실행하고 싶은 시스템 번호를 입력해주시면 됩니다>\n\n");
+		printf("					Made by-2019243064 박규민\n\n\n");
+		printf("			<실행하고 싶은 시스템 번호를 입력해주시면 됩니다>)\n");
+		printf("									(현재 타겟ID: %s)\n\n", targetID);
 		printf("					1. Reference Tag Analysis\n\n");
 		printf("					2. Target Tag Analysis\n\n");
 		printf("					3. Estimation Tag Analysis\n\n");
@@ -127,23 +132,23 @@ int main()
 			//참조 태그 분석 함수 실행
 			for (int j = 0; j < 60; j++)
 			{
-				referencelist = referenceRead(referencelist, referenceIDs[j]);		//1번 기능과 동일
+				referencelist = referenceRead(referencelist, referenceIDs[j]);		//참조 ID 분석하는 함수를 실행하여 참조 데이터 연결리스트에 저장하도록함
 			}
 			
 			printf("\n\n");
 
 			//타겟 태그 분석 함수 실행
-			targetlist = targetRead(targetlist, targetID);		//2번 기능과 동일
+			targetlist = targetRead(targetlist, targetID);		//타겟 ID 분석하는 함수를 실행하여 타겟 데이터 연결리스트에 저장하도록 함
 
 			printf("					<RSSI근접도 분석 목록>\n");
 
-			estimationlist = estimationRead(estimationlist, referencelist, targetlist->rssi);		//
-			estimationview(estimationlist);
+			estimationlist = estimationRead(estimationlist, referencelist, targetlist->rssi);		//타겟 ID와 RSSI가 가장 비슷한 순으로 연결리스트에 저장하는 함수를 실행하여 예측 연결리스트에 저장되도록 함
+			estimationview(estimationlist);		//사용자에게 RSSI 근접도로 저장된 예측 연결리스트를 보여줌으로써 제대로 분석이 되었는지 확인할 수 있도록 합니다.
 
-			printf("참조할 데이터 개수를 입력해주세요: ");
+			printf("참조할 데이터 개수를 입력해주세요: ");		//KNN알고리즘을 위해 사용자가 직접 데이터 신뢰성을 정하도록 합니다
 			scanf("%d", &knnuser);
 
-			if ((knnuser < 1) || (60 < knnuser))
+			if ((knnuser < 1) || (60 < knnuser))		//사용자가 1~60까지의 숫자가 아닌 그 외의 수를 넣었을 경우 에러를 표출해줍니다.
 			{
 				printf("error..입력하신 개수가 참조 범위를 벗어납니다");
 				printf("처음으로 돌아갑니다.");
@@ -151,54 +156,55 @@ int main()
 
 			else
 			{
-				mainwalker = estimationlist;
-				int knncount = 0;
+				mainwalker = estimationlist;	//mainwalker가 RSSI근접도로 저장된 연결리스트 헤더부분을 가리키게 합니다.	
+				int knncount = 0;	//knn을 몇번 실행하는지 알기위한 변수
 
-				for (int f = 0; f <= knnuser - 1; f++)
+				for (int f = 0; f <= knnuser - 1; f++)		//반복이 0부터 시작(배열값 참조를 위해)이므로 기존 유저가 입력한 수에서 1을 빼야 딱 맞습니다 
 				{
-					esticount = 0;
-					knncount = knncount + 1;
+					esticount = 0;		//esticount는 x좌표 y좌표의 배열을 가리키게 하기 위해 해당하는 수를 저장하기 위한 역할입니다
+					knncount = knncount + 1;		//x좌표의 평균과 y좌표의 평균을 구하기 위해 해당 데이터가 몇 번 더해졌는지 카운트하도록 합니다
 					for (int e = 0; e < 60; e++)
 					{
-						if (strcmp(mainwalker->id, referenceIDs[e]) == 0)
+						if (strcmp(mainwalker->id, referenceIDs[e]) == 0)	//RSSI근접도로 저장된 연결리스트의 ID와 참조ID의 배열에 있는 ID가 같을 경우 해당 반복문을 탈출하게 합니다.
 						{
 							break;
 						}
 						else
 						{
-							esticount = esticount + 1;
+							esticount = esticount + 1;		//아닐경우에는 배열 가리키게 하는 값을 1개 증가시키고 다음 배열을 비교하게 합니다.
 						}
 
 					}
 
-					xres = referecePoints[esticount][0] + xres;
-					yres = referecePoints[esticount][1] + yres;
+					xres = referecePoints[esticount][0] + xres;		//탈출에 성공할 경우 xres에 x좌표를 넣어줍니다, 이때 esticount가 참조 좌표 데이터의 배열과 일치한 좌표를 추출하고 기존 x좌표에 계속 더하도록 합니다.
+					yres = referecePoints[esticount][1] + yres;		//y좌표 또한 위와 동일합니다.
 
 
-					mainwalker = mainwalker->next;
+					mainwalker = mainwalker->next;		//RSSI근접도로 저장된 연결리스트의 다음 부분을 가르키게 함으로써 유저가 입력한 수까지 참조하도록 반복합니다.
 
 				}
 
-				estimationCal(xres, yres, mainwalker->id, knncount);
+				estimationCal(xres, yres, mainwalker->id, knncount);		//다 되고나면 해당 함수를 실행시키는데 , 이때 x좌표, y좌표, RSSI근접도로 저장된 연결리스트의 ID, 평균을 구하기 위한 분모를 보내줍니다.
 
 			}
 
 
 		}
 
+		//사용자가 타겟의 ID를 다른 ID로 변경하고 싶을 시 변경할 수 있도록 해주는 기능
 		else if (interchoice == 4)
 		{
 			char temp[27] = "";
 			printf("변경하실 Target의 ID를 입력(26개 정확히): ");
-			scanf("%s", temp);
+			scanf("%s", temp);		//사용자로부터 입력받은 문자열을 임시 공간에 넣어줍니다.
 
-			if (strlen(temp) == 26)
+			if (strlen(temp) == 26)			//만일 사용자가 26자리 정확히 넣었을 경우에 실행하는 문장입니다.
 			{
-				strcpy(targetID, temp);
+				strcpy(targetID, temp);			
 				printf("타겟 ID의 변경이 완료되었습니다\n\n");
 			}
 		
-			else
+			else		//잘못입력할 경우에 실행하는 문장
 			{
 				printf("Error...잘못입력하셨습니다\n\n");
 			}
@@ -206,7 +212,7 @@ int main()
 			
 		}
 
-		else if (interchoice == 0)
+		else if (interchoice == 0)		//0을 입력할경우 프로그램을 종료하도록 해줍니다.
 		{
 			printf("시스템을 종료합니다\n");
 			exit(0);
@@ -220,15 +226,15 @@ int main()
 }
 
 //1번 기능				1번 기능				1번 기능				1번 기능				1번 기능				1번 기능				
-TAGINFO* referenceRead(TAGINFO* tagreadlist, char referenceid[27])
+TAGINFO* referenceRead(TAGINFO* tagreadlist, char referenceid[27])		//해당하는 참조 ID들의 데이터 불러오는 기능
 {
-	char str[200];
-	char* res;
+	char str[200];		//txt파일에서 가져온 문장을 임시로 저장해두기 위한 공간
+	char* res;		//문자열을 가르키는 포인터
 
-	FILE* fp;
-	fp = fopen("RFID_Data.txt", "r");
+	FILE* fp;		
+	fp = fopen("RFID_Data.txt", "r");		//RFID_Data.txt파일을 읽기 형식으로 엽니다.
 	
-	int count = 0;
+	int count = 0;	//같은 ID에서 추출한 정보들이 몇개인지 카운트하는 변수
 	float sumrssi = 0;
 	float sumhour = 0, summinute = 0;
 	float sumseconds = 0;
@@ -238,40 +244,40 @@ TAGINFO* referenceRead(TAGINFO* tagreadlist, char referenceid[27])
 
 	double distance = 0;
 	double timesum = 0;
-	while (!feof(fp))
+	while (!feof(fp))		//파일의 끝이 나올때까지 반복
 	{
 		fgets(str, sizeof(str), fp);	//rfid_data.txt파일에서 한줄을 가져옴
-		res = strtok(str, " =,T\n");
-		res = strtok(NULL, " =,T\n");
+		res = strtok(str, " =,T\n");		//가져온 문장을 =,T \n(한줄 건너뜀)이 있을경우 나눠냅니다.
+		res = strtok(NULL, " =,T\n");		//남은 문장 이어서 작업
 		res = strtok(NULL, " =,T\n");
 		
-		if (strcmp(referenceid, res) == 0)
+		if (strcmp(referenceid, res) == 0)		//현재 문장에서 나눠서 뽑아낸 ID하고 참조ID가 동일할 경우
 		{
-			count = count + 1;
+			count = count + 1;		//같은 ID에서 추출한 데이터들이 몇개나 있는지 카운트를 1 늘려줍니다.
 
-			while (res != NULL)
+			while (res != NULL)		//남은 문장이 없을때까지 반복
 			{
 
 
-				if (strcmp(res, "rssi") == 0)
+				if (strcmp(res, "rssi") == 0)		//rssi라는 단어가 나올경우 실행
 				{
 					res = strtok(NULL, " =,T\n");
-					sumrssi = atoi(res) + sumrssi;
+					sumrssi = atoi(res) + sumrssi;		//해당 rssi를 int형으로 변환 후 rssi를 해당 ID RSSI 총합에 더해줍니다.
 					
 				}
 
-				else if (strcmp(res, "time") == 0)
+				else if (strcmp(res, "time") == 0)	//time이라는 단어가 나올경우 실행
 				{
 					res = strtok(NULL, " =,T");
 					
-					res = strtok(NULL, " =,T:");
-					sumhour = atoi(res);
+					res = strtok(NULL, " =,T:");		//:를 함으로써 시간, 분, 초 나누는 역할을 하도록 했습니다.
+					sumhour = atoi(res);		//시간 int형으로 변환
 					
 					res = strtok(NULL, " =,T:");
-					summinute = atoi(res);
+					summinute = atoi(res);		//분 int형으로 변환
 
 					res = strtok(NULL, " =,T:");
-					sumseconds = atof(res);
+					sumseconds = atof(res);		//초 float형으로 변환
 
 
 					timesum = sumhour * 60;	//시를 분으로 변환 넣어두기
@@ -279,20 +285,18 @@ TAGINFO* referenceRead(TAGINFO* tagreadlist, char referenceid[27])
 
 					timesum = summinute + sumseconds;		//초로 변환한거를 기존 초와 합하기
 					
-					if (count >= 2)
+					if (count >= 2)		//카운트가 2가 넘을 경우
 					{
-
-
-						distance = timesum - temp + distance;
+						distance = timesum - temp + distance;	//초로 변환한 시간을 모두 더한 수에다 방금 전 시간에 읽힌 수를 뺌으로써 시간 간격을 구합니다 + 기존 저장되있던 시간간격도 더해줌으로써 시간 간격의 총합을 구해줍니다
 					}
-					temp = timesum;
+					temp = timesum;		//temp활용을 위해 해당 칸에 방금 한 시간의 총합을 넣어줍니다.
 
 
 				}
 
-				else
+				else		//rssi나 time이 없을경우엔 계속 나누도록 합니다.
 				{
-					res = strtok(NULL, " =,T\n");
+					res = strtok(NULL, " =,T\n");		
 				}
 			}
 
@@ -304,9 +308,9 @@ TAGINFO* referenceRead(TAGINFO* tagreadlist, char referenceid[27])
 
 	}
 
-	fclose(fp);
+	fclose(fp);		//읽기 형식으로 열은 파일을 닫아줍니다.
 
-	if (sumrssi == 0)
+	if (sumrssi == 0)		//rssi가 0일경우에는 해당 참조 ID에서 읽힌게 없다는 뜻이므로 읽힌 데이터가 없음을 사용자에게 알려줍니다.
 	{
 		printf("ID: %s\n", referenceid);
 		return tagreadlist;
@@ -315,41 +319,43 @@ TAGINFO* referenceRead(TAGINFO* tagreadlist, char referenceid[27])
 	else
 	{
 		sumrssi = sumrssi / count;	//rssi평균
-		distance = distance/count;
+		distance = distance/count;		//인터벌 평균
 		
 
-		tagreadlist = referenceInlist(tagreadlist, referenceid, distance,sumrssi);
+		tagreadlist = referenceInlist(tagreadlist, referenceid, distance,sumrssi);		//참조 데이터들을 연결리스트에 넣어주기 위한 함수에 참조데이터연결리스트, 참조ID, 인터벌 평균, rssi평균 이렇게 보내줍니다
 
-		return tagreadlist;
+		return tagreadlist;		//다하고 나면 만들어진 연결리스트를 main에 돌려줍니다.
 	}
 	
 }
 
-TAGINFO* referenceInlist(TAGINFO* taglist,char inid[27],double intime,float inrssi)
+TAGINFO* referenceInlist(TAGINFO* taglist,char inid[27],double intime,float inrssi)		//불러온 참조 데이터들을 연결리스트에 저장하는 기능
 {
 	TAGINFO* newtaginfo,*current=NULL,*follow=NULL;
-	current = taglist;
-	newtaginfo = (TAGINFO*)malloc(sizeof(TAGINFO));
+	current = taglist;		//헤더부분 가리키게 함
+	newtaginfo = (TAGINFO*)malloc(sizeof(TAGINFO));		//새로운 메모리 할당
 
-	strcpy(newtaginfo->id, inid);
-	newtaginfo->rssi = inrssi;
-	newtaginfo->identifiedTime = intime;
+	strcpy(newtaginfo->id, inid);		//새 연결리스트의 id에는 가져온 참조ID를 넣습니다
+	newtaginfo->rssi = inrssi;		//새 연결리스트의 rssi에는 가져온 rssi의 평균을 넣습니다.
+	newtaginfo->identifiedTime = intime;		//새 연결리스틔 인터벌에는 가져온 인터벌의 평균을 넣습니다.
 
 
-	while (current != NULL)
+	while (current != NULL)		//현재 current가 가리키고 있는 부분이 NULL이 나올때까지 반복
 	{
 		follow = current;
 		current = current->next;
 	}
-	newtaginfo->next = current;
-	if (current == taglist)
+
+	newtaginfo->next = current;		//current는 지금 NULL이니까 새로운 노드의 다음은 current를 가리키게 합니다
+
+	if (current == taglist)		//연결리스트에 저장되있는 것이 하나도 없을 경우에(헤더부분부터 NULL일 경우) 실행
 	{
-		taglist = newtaginfo;
+		taglist = newtaginfo;		//연결리스트의 시작은 새로만든 연결리스트이다
 	}
 
 	else
 	{
-		follow->next = newtaginfo;
+		follow->next = newtaginfo;		//마지막인 연결리스트에 새로운 연결리스트를 연결함으로써 이어지도록 함
 	}
 
 	return taglist;
@@ -358,8 +364,11 @@ TAGINFO* referenceInlist(TAGINFO* taglist,char inid[27],double intime,float inrs
 
 
 //2번 기능			//2번 기능			//2번 기능			//2번 기능			//2번 기능			//2번 기능			
-TAGINFO* targetRead(TAGINFO* tagreadlist, char targetid[27])
+TAGINFO* targetRead(TAGINFO* tagreadlist, char targetid[27])		//해당하는 타겟 ID의 데이터를 불러오는 기능
 {
+
+	//1번 기능의 반복문을 제외하면 동일하게 문장 나누는 기능과 평균들을 구하는 기능입니다.
+	//1번 기능의 반복문을 제외하면 동일하게 문장 나누는 기능과 평균들을 구하는 기능입니다.
 	char str[200];
 	char* res;
 
@@ -419,12 +428,9 @@ TAGINFO* targetRead(TAGINFO* tagreadlist, char targetid[27])
 
 					if (count >= 2)
 					{
-
-
 						distance = timesum - temp + distance;
 					}
 					temp = timesum;
-
 
 				}
 
@@ -453,10 +459,10 @@ TAGINFO* targetRead(TAGINFO* tagreadlist, char targetid[27])
 	else
 	{
 		sumrssi = sumrssi / count;	//rssi평균
-		distance = distance / count;
+		distance = distance / count;	//인터벌 평균
 
 
-		tagreadlist = targetInlist(tagreadlist, targetid, distance, sumrssi);
+		tagreadlist = targetInlist(tagreadlist, targetid, distance, sumrssi);		//타겟ID의 데이터들을 연결리스트에 저장하도록 하는 함수에 타겟데이터연결리스트, 타겟ID, 인터벌 평균, rssi 평균 이렇게 보내줍니다.
 
 		return tagreadlist;
 	}
@@ -466,31 +472,33 @@ TAGINFO* targetRead(TAGINFO* tagreadlist, char targetid[27])
 
 
 
-TAGINFO* targetInlist(TAGINFO* taglist, char inid[27], double intime, float inrssi)
+TAGINFO* targetInlist(TAGINFO* taglist, char inid[27], double intime, float inrssi)		//타겟 ID 데이터를 연결리스트에 저장해주는 기능
 {
 	TAGINFO* newtaginfo, * current = NULL, * follow = NULL;
 	current = taglist;
-	newtaginfo = (TAGINFO*)malloc(sizeof(TAGINFO));
+	newtaginfo = (TAGINFO*)malloc(sizeof(TAGINFO));		//새로운 메모리 할당
 
-	strcpy(newtaginfo->id, inid);
-	newtaginfo->rssi = inrssi;
-	newtaginfo->identifiedTime = intime;
+	strcpy(newtaginfo->id, inid);		//새 연결리스트의 id에 가져온 id 넣어줌
+	newtaginfo->rssi = inrssi;		//새 연결리스트의 rssi에 rssi평균 가져온거 넣어줌
+	newtaginfo->identifiedTime = intime;		//새 연결리스트의 인터벌에 가져온 인터벌 평균 넣어줌
 
 
-	while (current != NULL)
+	while (current != NULL)		//current가 NULL이 나올때까지 반복
 	{
 		follow = current;
 		current = current->next;
 	}
-	newtaginfo->next = current;
-	if (current == taglist)
+
+	newtaginfo->next = current;	//current는 NULL을 가리키고 있으니 새롭게 할당받은 공간의 다음 부분을 current를 가리키게 함으로써 연결		
+	
+	if (current == taglist)		//혹시라도 current가 헤더부분 그대로 가리키고 있을 경우
 	{
 		taglist = newtaginfo;
 	}
 
 	else
 	{
-		follow->next = newtaginfo;
+		follow->next = newtaginfo;		//아닐경우엔 follow의 다음 부분은 새롭게 할당받은 공간을 가리킴으로써 연결리스트 연결을 완성시킴
 	}
 
 	return taglist;
@@ -498,55 +506,56 @@ TAGINFO* targetInlist(TAGINFO* taglist, char inid[27], double intime, float inrs
 
 
 //3번 기능			//3번 기능			//3번 기능			//3번 기능			//3번 기능			//3번 기능
-TAGINFO* estimationRead(TAGINFO* estimationlist, TAGINFO* referencelist, float targetrssi)
+TAGINFO* estimationRead(TAGINFO* estimationlist, TAGINFO* referencelist, float targetrssi)		//RSSI 근접도로 연결리스트 저장을 위한 기능
 {
 	TAGINFO* current = NULL,*follow=NULL,*newinfo=NULL ,*referencewalker=NULL;
-	referencewalker = referencelist;
-	while (referencewalker != NULL)		//절대값으로 만들기 위한 코드 부분
+	referencewalker = referencelist;		//참조 연결리스트의 헤더부분을 가리키게함
+	while (referencewalker != NULL)		//절대값으로 만들기 위한 코드 부분(참조 연결리스트의 마지막부분까지 반복)
 	{
 		
-		referencewalker->rssi = referencewalker->rssi - targetrssi;
+		referencewalker->rssi = referencewalker->rssi - targetrssi;		//referencewalker의 rssi를 타겟의 rssi 만큼 빼도록 합니다
 
-		if (0 > referencewalker->rssi)		//절대값 전환을 위한 코드
+		if (0 > referencewalker->rssi)		//절대값 전환을 위한 코드 부분
 		{
-			referencewalker->rssi = referencewalker->rssi * (-1);
+			referencewalker->rssi = referencewalker->rssi * (-1);		//혹시라도 -가 나올경우 +전환
 		}
 		
-		referencewalker = referencewalker->next;
+		referencewalker = referencewalker->next;		//참조 연결리스트의 다음부분을 가리키게 함
 	}
 	
 
-	referencewalker = referencelist;
-	while (referencewalker != NULL)
+	referencewalker = referencelist;		//다시 참조 연결리스트의 헤더부분을 가리키게 함
+	while (referencewalker != NULL)		//참조 연결리스트의 마지막 부분까지 반복함
 	{
-		current = estimationlist;
+		current = estimationlist;		//current와, follow는 RSSI근접도 연결리스트의 헤더부분을 가리키게 함
 		follow = estimationlist;
 
-		newinfo = (TAGINFO*)malloc(sizeof(TAGINFO));
+		newinfo = (TAGINFO*)malloc(sizeof(TAGINFO));		//새로운 메모리 공간 할당
 
-		strcpy(newinfo->id, referencewalker->id);
-		newinfo->rssi = referencewalker->rssi;
-		newinfo->identifiedTime = referencewalker->identifiedTime;
+		strcpy(newinfo->id, referencewalker->id);		//새 공간의 ID에는 참조 데이터 연결리스트의 ID를 넣고
+		newinfo->rssi = referencewalker->rssi;		//새 공간의 RSSI에는 참조 데이터 연결리스트의 RSSI 평균을 넣고
+		newinfo->identifiedTime = referencewalker->identifiedTime;		//새 공간의 인터벌에는 참조 데이터 연결리스트의 인터벌 평균을 넣습니다.
 		
 		
 
-		while ((current != NULL)&& (current->rssi < newinfo->rssi))
+		while ((current != NULL)&& (current->rssi < newinfo->rssi))		//저장은 참조 데이터 RSSI 평균이 Target의 rssi와 최대한 비슷한 순으로 나열해야하는 조건문입니다.
 		{
 			follow = current;
 			current = current->next;
 		}
 		newinfo->next = current;
 
-		if (current == estimationlist)
+		if (current == estimationlist)		//헤더부분 가리키고 있을 시 헤더부분을 newinfo로 변경
 		{
 			estimationlist = newinfo;
 		}
+
 		else
 		{
 			follow->next = newinfo;
 		}
 
-		referencewalker = referencewalker->next;
+		referencewalker = referencewalker->next;		//참조 연결리스트의 다음 연결구간을 가리킴
 		
 	}
 	
@@ -555,14 +564,15 @@ TAGINFO* estimationRead(TAGINFO* estimationlist, TAGINFO* referencelist, float t
 	return estimationlist;
 }
 
-TAGINFO* estimationview(TAGINFO* estimationlist)
+TAGINFO* estimationview(TAGINFO* estimationlist)		//RSSI근접도로 저장된 연결리스트의 공간을 보게 하는 기능
 {
 
-	if (estimationlist != NULL)
+	if (estimationlist != NULL)		//해당 연결리스트가 NULL이 나올때까지 반복
 	{
 		printf("ID:%s\n", estimationlist->id);
 		printf("rssi근접도:%.1f   \n\n", estimationlist->rssi);
-		estimationview(estimationlist->next);
+
+		estimationview(estimationlist->next);		//다음 연결리스트 공간을 가리켜서 다 표시해주기
 	}
 
 	else
@@ -571,13 +581,15 @@ TAGINFO* estimationview(TAGINFO* estimationlist)
 	}
 }
 
-void estimationCal(int inxres, int inyres, char finalid[27], int rescount)
-{
-	int fx=0;
-	int fy=0;
 
-	fx = inxres / rescount;
-	fy = inyres / rescount;
+		
+void estimationCal(int inxres, int inyres, char finalid[27], int rescount)		//예측 좌표를 계산해서 알려주는 기능
+{
+	int fx=0;	//x좌표 저장 변수
+	int fy=0;	//y좌표 저장 변수
+
+	fx = inxres / rescount;		//x의 총합에다 참조한 데이터의 개수로 나누었습니다.
+	fy = inyres / rescount;		//y의 총합에다 참조한 데이터의 개수로 나누었습니다.
 
 	printf("				타겟ID의 최종 예측 좌표는 X: %d, Y: %d 입니다", fx, fy);
 
@@ -589,20 +601,20 @@ void estimationCal(int inxres, int inyres, char finalid[27], int rescount)
 
 
 
-TAGINFO* listInview(TAGINFO* walker)
+TAGINFO* listInview(TAGINFO* walker)		//분석한 참조 데이터, 타겟 데이터 이 2개의 연결리스트들에 정상적으로 잘 저장이 되어있는지 사용자에게 보여주는 기능
 {
-	if (walker != NULL)
+	if (walker != NULL)		//연결리스트의 마지막 부분까지 반복
 	{
 		printf("ID: %s\n", walker->id);
 		printf("RSSI:%.1f   ", walker->rssi);
 		printf("인터벌: %.3lf \n\n",walker->identifiedTime);
 
-		listInview(walker->next);
+		listInview(walker->next);		//연결리스트의 다음 부분을 가리킴
 	}
 
 	else
 	{
-		return walker;
+		return walker;		//다 하고나면 main에 돌려줌
 	}
 }
 
