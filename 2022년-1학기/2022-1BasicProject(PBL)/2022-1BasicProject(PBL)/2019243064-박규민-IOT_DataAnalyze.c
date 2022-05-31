@@ -8,6 +8,9 @@ int loginsys(char userid[20], char userpw[30]);		//로그인함수
 
 int signup(char room[10], char households[10], char createid[20], char createpw[30]);		//회원가입함수
 
+int findidsys(char findroom[10], char findholds[10]);
+
+int findpwsys(char findid[20]);
 
 int main()
 {
@@ -23,6 +26,13 @@ int main()
 	char createpw[30];		//비번
 	int createcheck;		//회원가입이 정상적으로 되었는지 확인
 
+	//아이디 비밀번호 찾기 변수
+	int idpwuser;
+	char findroom[10];
+	char findholds[10];
+	char findid[20];
+
+	
 	for (int i = 0; ; i++)
 	{
 		system("cls");
@@ -95,8 +105,37 @@ int main()
 			}
 		}
 
-		else if (userchoice1 == 3)
+		else if (userchoice1 == 3)		//아이디, 비번 찾기
 		{
+
+			system("cls");
+			printf("                                     <1>. 아이디 찾기\n\n");
+			printf("                                     <2>. 비밀번호 찾기\n\n");
+
+			scanf("%d", &idpwuser);
+
+			if (idpwuser == 1)
+			{
+				printf("거주하시는 호수를 입력해주세요: ");
+				scanf("%s", findroom);
+
+				printf("세대원이 몇명인지 입력해주세요: ");
+				scanf("%s", findholds);
+
+				findidsys(findroom, findholds);
+				system("pause");
+			}
+
+			else if (idpwuser == 2)		//비밀번호 찾는 기능
+			{
+				printf("아이디를 적어주세요: ");
+
+				scanf("%s", findid);
+
+				findpwsys(findid);
+				system("pause");
+			}
+
 
 		}
 
@@ -222,5 +261,77 @@ int signup(char room[10], char households[10], char createid[20], char createpw[
 
 
 
+
+}
+
+
+int findidsys(char findroom[10], char findholds[10])		//아이디 찾는 함수
+{
+	char* room;
+	char* holds;
+	char* id;
+	char str[60];
+	FILE* fp;
+
+	fp = fopen("IOTuser.txt", "r");
+
+	while (!feof(fp))		//열은 파일에서 마지막 부분까지 나올때까지 반복
+	{
+		fgets(str, sizeof(str), fp);
+		room = strtok(str, " ");		//호수 넣어두기
+		holds = strtok(NULL, " ");
+		id = strtok(NULL, " ");
+
+		if ((strcmp(findroom, room) == 0)&& (strcmp(findholds, holds) == 0))		//호수하고 세대원수가 같을 시
+		{
+			printf("고객님의 아이디는 < %s > 입니다", id);
+			return 1;		//찾음
+			fclose(fp);
+			break;
+		}
+
+
+
+
+
+
+	}
+
+	fclose(fp);
+	printf("정보와 일치한 데이터가 없습니다..");
+	return 0;
+
+}
+
+
+int findpwsys(char findid[20])
+{
+	char* readid;
+	char* readpw;
+	char* temp;
+	char* str[60];
+	FILE* fp;
+	
+	fp = fopen("IOTuser.txt", "r");
+
+	while (!feof(fp))		//열은 파일에서 마지막 부분까지 나올때까지 반복
+	{
+		fgets(str, sizeof(str), fp);
+		temp = strtok(str, " ");		//호수 넣어두기
+		temp = strtok(NULL, " ");
+		readid = strtok(NULL, " ");
+		readpw = strtok(NULL, " \n");
+		if (strcmp(findid, readid) == 0)		//호수하고 세대원수가 같을 시
+		{
+			printf("고객님의 비밀번호는 < %s > 입니다", readpw);
+			return 1;		//찾음
+			fclose(fp);
+			break;
+		}
+
+	}
+	fclose(fp);
+	printf("아이디와 일치하는 정보가 없습니다..");
+	return 0;
 
 }
