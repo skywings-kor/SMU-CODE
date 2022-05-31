@@ -6,7 +6,7 @@
 
 int loginsys(char userid[20], char userpw[30]);		//로그인함수
 
-int signup(int room, int households, char createid[20], char createpw[30]);		//회원가입함수
+int signup(char room[10], char households[10], char createid[20], char createpw[30]);		//회원가입함수
 
 
 int main()
@@ -17,8 +17,8 @@ int main()
 	char userid[20], userpw[30];
 
 	//회원가입 변수
-	int room;	//호실
-	int households;		//세대원수
+	char room[10];	//호실
+	char households[10];		//세대원수
 	char createid[20];		//아이디
 	char createpw[30];		//비번
 	int createcheck;		//회원가입이 정상적으로 되었는지 확인
@@ -63,10 +63,10 @@ int main()
 		else if (userchoice1 == 2)
 		{
 			printf("호수를 입력해주세요(ex_1203): ");
-			scanf("%d", &room);
+			scanf("%s", room);
 
 			printf("\n세대원이 몇명인지 입력해주세요(ex_4): ");
-			scanf("%d", &households);
+			scanf("%s", households);
 
 			printf("\n만드실 아이디를 입력해주세요(20자 이내): ");
 			scanf("%s", createid);
@@ -76,6 +76,23 @@ int main()
 
 			createcheck=signup(room, households, createid, createpw);
 			
+			if (createcheck == 0)
+			{
+				printf("\n\n 중복된 아이디가 존재합니다..\n");
+				system("pause");
+			}
+
+			else if (createcheck == 1)
+			{
+				printf("\n\n 이미 만들어져있는 호수입니다..\n");
+				system("pause");
+			}
+
+			else if(createcheck==2)
+			{
+				printf("\n\n 정상적으로 회원가입이 완료되었습니다..\n");
+				system("pause");
+			}
 		}
 
 		else if (userchoice1 == 3)
@@ -121,6 +138,12 @@ int loginsys(char userid[20], char userpw[30])
 		{
 			fclose(fp);		//파일 닫아줌
 			return 1;		//로그인 성공
+			break;
+		}
+
+		else
+		{
+
 		}
 
 	}
@@ -130,36 +153,74 @@ int loginsys(char userid[20], char userpw[30])
 
 }
 
-
-int signup(int room, int households, char createid[20], char createpw[30])
+//회원가입함수		회원가입함수		회원가입함수		회원가입함수		회원가입함수		회원가입함수		회원가입함수		
+int signup(char room[10], char households[10], char createid[20], char createpw[30])
 {
-	
-	FILE* fp;
-	fp = fopen("IOTuser.txt", "a");
-
+	//회원가입을 위한 변수
 	char str[60];
 	char* alid;
 	char* alpw;
 	char* alroom;
+	char* temp;
+	int changeroom;
 
-	while (!feof(fp))
-	{
-		fgets(str, sizeof(str), fp);
+	FILE* fp;
 
-	}
+
+	fp = fopen("IOTuser.txt", "r");
+
+
 
 	while (!feof(fp))		//열은 파일에서 마지막 부분까지 나올때까지 반복
 	{
 		fgets(str, sizeof(str), fp);	
-		id = strtok(str, " ");		
-		pw = strtok(NULL, " ");		//위 로그인 코드와 동일한 역할
+		alroom = strtok(str, " ");		//호수 넣어두기
+		temp = strtok(NULL, " ");
+		alid = strtok(NULL, " ");		
+		alpw = strtok(NULL, " \n");		//위 로그인 코드와 동일한 역할
 
-		if (strcmp(createid, id) == 0)		//같은 아이디가 이미 존재시
+
+		if (strcmp(createid, alid) == 0)		//같은 아이디가 이미 존재시
 		{
-			return 1;		
+			return 0;		//같은 아이디 오류
 			break;
 		}
 
+		else if (strcmp(room, alroom) == 0)
+		{
+			return 1;		//같은 호수 오류
+			break;
+		}
+		
+
 
 	}
+	//파일을 다 돌았는데 해당되는 것이 없을 경우 회원가입 진행시켜주기
+	fclose(fp);
+	fp = fopen("IOTuser.txt", "a");		//파일 입력 중 추가하는 형식으로 열기
+	
+	fputs("\n", fp);
+	fputs(room, fp);
+	fputs(" ", fp);
+
+	fputs(households, fp);
+	fputs(" ", fp);
+
+	fputs(createid, fp);
+	fputs(" ", fp);
+
+	fputs(createpw, fp);
+	
+
+	fclose(fp);
+
+	return 2;
+
+
+
+
+
+
+
+
 }

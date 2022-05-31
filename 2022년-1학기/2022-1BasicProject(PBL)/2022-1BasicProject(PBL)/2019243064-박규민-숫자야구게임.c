@@ -575,7 +575,7 @@
 //{
 //	FILE* fp;
 //	fp = fopen("score.txt","a");	//파일 추가작성 형식으로 열음
-//	fputs("\n", fp);
+//	("\n", fp);
 //	fputs(loginid, fp);		//score.txt파일에 id 작성
 //	fputs(" ", fp);
 //
