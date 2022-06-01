@@ -4,6 +4,16 @@
 #include <time.h>
 #pragma warning (disable:4996)
 
+struct node {
+
+	char room[10];
+	char households[10];
+	char createid[20];
+	char createpw[30];
+	
+
+}NODE;
+
 int loginsys(char userid[20], char userpw[30]);		//로그인함수
 
 int signup(char room[10], char households[10], char createid[20], char createpw[30]);		//회원가입함수
