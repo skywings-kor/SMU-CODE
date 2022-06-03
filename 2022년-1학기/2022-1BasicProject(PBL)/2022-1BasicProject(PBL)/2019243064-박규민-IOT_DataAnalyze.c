@@ -363,12 +363,14 @@ int	LightDataCreate()
 	TN* timelist;		//시간 담아둘 리스트 선언
 	timelist = NULL;
 	TN* newnode;
-	TN* current = NULL, * follow = NULL;
+	TN* current = NULL, * follow = NULL, *checker=NULL;
 
 	srand(time(NULL));		//랜덤함수 쓰기위한 선언
 	FILE* fp;
 	fp = fopen("IOTdata.txt", "a");
 	
+	int errorcount = 0;
+
 	char room1_light;		//방1
 	char room2_light;		//방2
 	char room3_light;		//방3
@@ -402,7 +404,7 @@ int	LightDataCreate()
 	{
 		for (int i = 1; i <= room1_time; i++ )
 		{
-
+			errorcount = 1;		//일단 오류가 있는걸로 초기화
 			room1_hour = rand() % (24 - wakeup   + 1) + wakeup;	//일어난 시간부터 자기전까지의 시간 중 전등 시간 배분
 			room1_min = rand() % 61;
 			room1_sec = rand() % 61;
@@ -410,12 +412,14 @@ int	LightDataCreate()
 			room1_1temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//키기 시작한 시간
 
 			room1_hourlong = rand() % 3;
-			if (room1_hourlong == 2)
+
+			if (room1_hourlong == 2)		//최대 2시간이 걸렸을 경우 분 초는 0으로 세팅
 			{
 				room1_min = 0;
 				room1_sec = 0;
 			}
-			else
+
+			else	//아닐경우엔 이렇게 분,초 생성;
 			{
 				room1_min = rand() % 61;
 				room1_sec = rand() % 61;
@@ -423,19 +427,52 @@ int	LightDataCreate()
 
 			room1_2temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//끈 시간
 			
-			
-			
+			//이렇게 시작과 끝은 생성을 했는데, 이런 생성한 시간이 겹치는지 검토를 하도록 해야함 그러기 위해 2번째 실행부터는 이것을 거치도록함
 
 			if (i > 1)		//한번 반복하고나면 무조건 검토하도록 하는거
 			{
+				checker = timelist;//검토하러 돌아다니는 역할
+				
+				while (checker != NULL)
+				{
+					if (((room1_1temp < checker->ontime) && (room1_2temp < checker->ontime)) || ((room1_1temp > checker->ontime) && (room1_2temp > checker->ontime)))
+					{
+						errorcount = 0;		//이상없음을 넣어줌
+						break;
+					}
+					else
+					{
+						checker = checker->next;
+					}
+					
+				}
 
 			}
 
 
+			if (errorcount == 0)
+			{
+				newnode = (TN*)malloc(sizeof(TN));
+				newnode->ontime = room1_1temp;
+				newnode->offtime = room1_2temp;
+
+				while (current != NULL)
+				{
+
+				}
+			}
+
+			else if (errorcount == 1)		//시간이 겹치는 문제가 있을 경우
+			{
+				i = i - 1;		//횟수 1회 차감하여 반복하도록함
+			}
+			
+			
+
 			printf("room1_hour: %d", room1_hour);
 			printf("        room1_min: %d", room1_min);
 			printf("        room1_sec: %d\n", room1_sec);
-
+			
 			
 
 		}
