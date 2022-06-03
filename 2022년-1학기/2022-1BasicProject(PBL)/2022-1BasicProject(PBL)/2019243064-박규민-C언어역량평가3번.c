@@ -17,7 +17,6 @@ int main(void)
 		if (first > third)
 		{
 			maxnumber = first;
-			
 		}
 
 		else

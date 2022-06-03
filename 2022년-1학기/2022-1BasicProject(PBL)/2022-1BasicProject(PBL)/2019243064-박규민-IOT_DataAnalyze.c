@@ -4,13 +4,19 @@
 #include <time.h>
 #pragma warning (disable:4996)
 
-struct node {
+typedef struct timenode
+{
+	int ontime;
+	int offtime;
+	struct timenode* next;
+}TN;
+
+typedef struct node {
 
 	char room[10];
 	char households[10];
-	char createid[20];
-	char createpw[30];
-	
+	char id[20];
+	char pw[30];
 
 }NODE;
 
@@ -21,6 +27,11 @@ int signup(char room[10], char households[10], char createid[20], char createpw[
 int findidsys(char findroom[10], char findholds[10]);
 
 int findpwsys(char findid[20]);
+
+//데이터 생성 함수
+int	LightDataCreate();
+
+
 
 int main()
 {
@@ -160,6 +171,7 @@ int main()
 	system("cls");
 
 	printf("로그인에 성공하여 메인페이지로 왔습니다");
+	LightDataCreate();
 	return 0;
 }
 
@@ -211,7 +223,6 @@ int signup(char room[10], char households[10], char createid[20], char createpw[
 	char* alpw;
 	char* alroom;
 	char* temp;
-	int changeroom;
 
 	FILE* fp;
 
@@ -344,4 +355,94 @@ int findpwsys(char findid[20])
 	printf("아이디와 일치하는 정보가 없습니다..");
 	return 0;
 
+}
+
+//전등 데이터 생섬 함수		전등 데이터 생섬 함수		전등 데이터 생섬 함수
+int	LightDataCreate()
+{
+	TN* timelist;		//시간 담아둘 리스트 선언
+	timelist = NULL;
+	TN* newnode;
+	TN* current = NULL, * follow = NULL;
+
+	srand(time(NULL));		//랜덤함수 쓰기위한 선언
+	FILE* fp;
+	fp = fopen("IOTdata.txt", "a");
+	
+	char room1_light;		//방1
+	char room2_light;		//방2
+	char room3_light;		//방3
+	char kitchen_light;		//부엌
+	char bigroom_light;		//거실
+
+	int room1_hour=0;
+	int room1_min = 0;
+	int room1_sec = 0;
+	int room1_hourlong = 0;
+	int room1_1temp = 0;
+	int room1_2temp = 0;
+
+	int room1_time=0;
+
+
+	int wakeup=0;
+
+	
+
+	wakeup = rand() % 3 + 6;		//6~8까지 랜덤 숫자
+
+	room1_time = rand() % 11;
+
+	if (room1_time == 0)
+	{
+
+	}
+
+	else
+	{
+		for (int i = 1; i <= room1_time; i++ )
+		{
+
+			room1_hour = rand() % (24 - wakeup   + 1) + wakeup;	//일어난 시간부터 자기전까지의 시간 중 전등 시간 배분
+			room1_min = rand() % 61;
+			room1_sec = rand() % 61;
+
+			room1_1temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//키기 시작한 시간
+
+			room1_hourlong = rand() % 3;
+			if (room1_hourlong == 2)
+			{
+				room1_min = 0;
+				room1_sec = 0;
+			}
+			else
+			{
+				room1_min = rand() % 61;
+				room1_sec = rand() % 61;
+			}
+
+			room1_2temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//끈 시간
+			
+			
+			
+
+			if (i > 1)		//한번 반복하고나면 무조건 검토하도록 하는거
+			{
+
+			}
+
+
+			printf("room1_hour: %d", room1_hour);
+			printf("        room1_min: %d", room1_min);
+			printf("        room1_sec: %d\n", room1_sec);
+
+			
+
+		}
+	}
+
+
+	
+
+	return 0;
 }
