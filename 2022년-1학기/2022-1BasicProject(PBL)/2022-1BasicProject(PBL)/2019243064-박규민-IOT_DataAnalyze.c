@@ -181,11 +181,11 @@ int main()
 	system("cls");
 
 	printf("데이터 생성을 시작합니다...\n\n");
-	for (int i = 0; i < 40; i++)
-	{
-		printf("%s 데이터 생성 완료..\n", ApartRoom[i]);
-		LightDataCreate(ApartRoom[i]);
-	}
+	/*for (int i = 0; i < 40; i++)
+	{*/
+		printf("%s 데이터 생성 완료..\n", ApartRoom[1]);
+		LightDataCreate(ApartRoom[1]);
+	//}
 	
 
 	
@@ -384,7 +384,7 @@ int	LightDataCreate(char apartroom[10])
 
 	srand(time(NULL));		//랜덤함수 쓰기위한 선언
 	FILE* fp;
-	fp = fopen("IOTdata.txt", "a");
+	
 	
 	int errorcount = 0;
 
@@ -465,7 +465,7 @@ int	LightDataCreate(char apartroom[10])
 				newnode->ontime = room1_1temp;
 				newnode->offtime = room1_2temp;
 
-				while (current != NULL)
+				while ((current != NULL) && (current->ontime < newnode->ontime))
 				{
 					if (room1_1temp < newnode->ontime)
 					{
@@ -494,6 +494,77 @@ int	LightDataCreate(char apartroom[10])
 				i = i - 1;		//횟수 1회 차감하여 반복하도록함
 			}
 		}
+
+
+		
+		//파일 넣을 준비
+		int starttime;
+		int endtime;
+		int hour = 0;
+		int min = 0;
+		int sec = 0;
+
+		char hourval[10];
+		char minval[10];
+		char secval[10];
+
+
+		current = timelist;
+		follow = timelist;
+		checker = timelist;
+		testcheck = timelist;
+		fp = fopen("IOTdata.txt", "a");
+		while (current != NULL)
+		{
+			
+			starttime = current->ontime;
+			endtime = current->offtime;
+			
+			//시작하는 시간
+			hour = starttime / 60 / 60;
+			min = (starttime - (hour * 60 * 60))/60;
+			sec = (starttime - (hour * 60 * 60) - (min * 60));
+
+			sprintf(hourval, "%d", hour);
+			sprintf(minval, "%d", min);
+			sprintf(secval, "%d", sec);
+			
+			fputs(hourval, fp);
+			fputs(":", fp);
+			fputs(minval, fp);
+			fputs(":", fp);
+			fputs(secval, fp);
+			
+			fputs("~", fp);
+			//끝나는 시간
+			hour = endtime/ 60 / 60;
+			min = (endtime - (hour * 60 * 60)) / 60;
+			sec = (endtime - (hour * 60 * 60) - (min * 60));
+
+			sprintf(hourval, "%d", hour);
+			sprintf(minval, "%d", min);
+			sprintf(secval, "%d", sec);
+
+			fputs(hourval, fp);
+			fputs(":", fp);
+			fputs(minval, fp);
+			fputs(":", fp);
+			fputs(secval, fp);
+
+
+
+
+			fputs("\n", fp);
+
+			
+			current = current->next;
+		}
+		
+		fclose(fp);
+
+
+
+
 	}
 
 	//테스트 출력 리스트 안에 잘 들어갔는지위한 확인
@@ -504,8 +575,8 @@ int	LightDataCreate(char apartroom[10])
 		testcheck = testcheck->next;
 	}*/
 
-		
-
+	
+	
 
 
 
