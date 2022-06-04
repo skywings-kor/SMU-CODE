@@ -35,6 +35,8 @@ int	LightDataCreate();
 
 int main()
 {
+
+
 	//로그인 시스템 변수
 	int userchoice1;		//유저가 실행하기 위해 선택하는 것을 넣는 변수
 	int logincheck;		//로그인 함수에서 반환값 받는 변수
@@ -363,7 +365,7 @@ int	LightDataCreate()
 	TN* timelist;		//시간 담아둘 리스트 선언
 	timelist = NULL;
 	TN* newnode;
-	TN* current = NULL, * follow = NULL, *checker=NULL;
+	TN* current = NULL, * follow = NULL, *checker=NULL,*testcheck=NULL;
 
 	srand(time(NULL));		//랜덤함수 쓰기위한 선언
 	FILE* fp;
@@ -397,58 +399,55 @@ int	LightDataCreate()
 
 	if (room1_time == 0)
 	{
-
+		//room1_time이 킨 적이 하루에 한 번도 없을 때 pass 하도록 하는 것
 	}
 
 	else
 	{
 		for (int i = 1; i <= room1_time; i++ )
 		{
-			errorcount = 1;		//일단 오류가 있는걸로 초기화
+			errorcount = 0;		//일단 오류가 없는걸로 초기화
+			current = timelist;
+			follow = timelist;
+			checker = timelist;
+			testcheck = timelist;
+
+			if (checker == NULL)		//처음 넣게되면 연결리스트에 아무것도 없어서 무한루프에 빠져서 추가해주기
+			{
+				errorcount = 0;
+			}
+
 			room1_hour = rand() % (24 - wakeup   + 1) + wakeup;	//일어난 시간부터 자기전까지의 시간 중 전등 시간 배분
-			room1_min = rand() % 61;
-			room1_sec = rand() % 61;
+			room1_min = rand() % 61;	//키는 분 생성
+			room1_sec = rand() % 61;	//키는 초 생성
+			
+			room1_1temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//킨 시간을 초로 변환
 
-			room1_1temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//키기 시작한 시간
+			room1_hourlong = rand() % 3+1;		//시간 지속시간
+			room1_min = rand() % 61;	//끄는 분 생성
+			room1_sec = rand() % 61;	//끄는 초 생성
+			room1_hour = room1_hour + room1_hourlong;//시간 늘어난거 더해주기
 
-			room1_hourlong = rand() % 3;
-
-			if (room1_hourlong == 2)		//최대 2시간이 걸렸을 경우 분 초는 0으로 세팅
-			{
-				room1_min = 0;
-				room1_sec = 0;
-			}
-
-			else	//아닐경우엔 이렇게 분,초 생성;
-			{
-				room1_min = rand() % 61;
-				room1_sec = rand() % 61;
-			}
-
-			room1_2temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//끈 시간
+			room1_2temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//끈 시간을 초로 변환
 			
 			//이렇게 시작과 끝은 생성을 했는데, 이런 생성한 시간이 겹치는지 검토를 하도록 해야함 그러기 위해 2번째 실행부터는 이것을 거치도록함
 
 			if (i > 1)		//한번 반복하고나면 무조건 검토하도록 하는거
 			{
-				checker = timelist;//검토하러 돌아다니는 역할
-				
 				while (checker != NULL)
 				{
-					if (((room1_1temp < checker->ontime) && (room1_2temp < checker->ontime)) || ((room1_1temp > checker->ontime) && (room1_2temp > checker->ontime)))
-					{
-						errorcount = 0;		//이상없음을 넣어줌
-						break;
-					}
-					else
+					if (((room1_1temp < checker->ontime) && (room1_2temp < checker->ontime)) ||( (room1_1temp > checker->offtime) && (room1_2temp > checker->offtime)))
 					{
 						checker = checker->next;
 					}
-					
+
+					else
+					{
+						errorcount = 1;
+						checker = checker->next;
+					}
 				}
-
 			}
-
 
 			if (errorcount == 0)
 			{
@@ -458,28 +457,48 @@ int	LightDataCreate()
 
 				while (current != NULL)
 				{
+					if (room1_1temp < newnode->ontime)
+					{
+						break;
+					}
 
+					else
+					{
+						follow = current;
+						current = current->next;
+					}
+				}
+				newnode->next = current;
+				if (current == timelist)		//아무것도 없을 경우 첫번째 칸에 넣기
+				{
+					timelist = newnode;
+				}
+				
+				else
+				{
+					follow->next = newnode;
 				}
 			}
-
 			else if (errorcount == 1)		//시간이 겹치는 문제가 있을 경우
 			{
 				i = i - 1;		//횟수 1회 차감하여 반복하도록함
 			}
-			
-			
-
-			printf("room1_hour: %d", room1_hour);
-			printf("        room1_min: %d", room1_min);
-			printf("        room1_sec: %d\n", room1_sec);
-			
-			
-
 		}
 	}
 
 
-	
+	//테스트 출력 리스트 안에 잘 들어갔는지위한 확인
+	/*testcheck = timelist;
+	while (testcheck != NULL)
+	{
+		printf("\n 시작시간 %d, 끝난시간 %d", testcheck->ontime, testcheck->offtime);
+		testcheck = testcheck->next;
+	}*/
+
+
+
+
+
 
 	return 0;
 }
