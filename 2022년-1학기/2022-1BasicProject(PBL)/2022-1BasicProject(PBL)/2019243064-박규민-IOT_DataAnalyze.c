@@ -29,13 +29,13 @@ int findidsys(char findroom[10], char findholds[10]);
 int findpwsys(char findid[20]);
 
 //데이터 생성 함수
-int	LightDataCreate();
+int	LightDataCreate(char apartroom[10]);
 
 
 
 int main()
 {
-
+	
 
 	//로그인 시스템 변수
 	int userchoice1;		//유저가 실행하기 위해 선택하는 것을 넣는 변수
@@ -170,10 +170,25 @@ int main()
 
 	}
 
+	//아파트 호수 배열 저장
+	char ApartRoom[40][10] = {
+		"101호","102호","201호","202호","301호","302호","401호","402호","501호","502호",
+		"601호","602호","701호","702호","801호","802호","901호","902호","1001호","1002호",
+		"1101호","1102호","1201호","1202호","1301호","1302호","1401호","1402호","1501호","1502호",
+		"1601호","1602호","1701호","1702호","1801호","1802호","1901호","1902호","2001호","2002호",
+	};
+
 	system("cls");
 
-	printf("로그인에 성공하여 메인페이지로 왔습니다");
-	LightDataCreate();
+	printf("데이터 생성을 시작합니다...\n\n");
+	for (int i = 0; i < 40; i++)
+	{
+		printf("%s 데이터 생성 완료..\n", ApartRoom[i]);
+		LightDataCreate(ApartRoom[i]);
+	}
+	
+
+	
 	return 0;
 }
 
@@ -360,7 +375,7 @@ int findpwsys(char findid[20])
 }
 
 //전등 데이터 생섬 함수		전등 데이터 생섬 함수		전등 데이터 생섬 함수
-int	LightDataCreate()
+int	LightDataCreate(char apartroom[10])
 {
 	TN* timelist;		//시간 담아둘 리스트 선언
 	timelist = NULL;
@@ -373,11 +388,6 @@ int	LightDataCreate()
 	
 	int errorcount = 0;
 
-	char room1_light;		//방1
-	char room2_light;		//방2
-	char room3_light;		//방3
-	char kitchen_light;		//부엌
-	char bigroom_light;		//거실
 
 	int room1_hour=0;
 	int room1_min = 0;
@@ -486,7 +496,6 @@ int	LightDataCreate()
 		}
 	}
 
-
 	//테스트 출력 리스트 안에 잘 들어갔는지위한 확인
 	/*testcheck = timelist;
 	while (testcheck != NULL)
@@ -495,6 +504,7 @@ int	LightDataCreate()
 		testcheck = testcheck->next;
 	}*/
 
+		
 
 
 
@@ -502,3 +512,4 @@ int	LightDataCreate()
 
 	return 0;
 }
+
