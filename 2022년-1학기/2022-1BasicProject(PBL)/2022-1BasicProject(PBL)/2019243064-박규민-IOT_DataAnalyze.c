@@ -20,6 +20,8 @@ typedef struct node {
 
 }NODE;
 
+NODE* TopUsage(NODE* list); 
+
 int loginsys(char userid[20], char userpw[30]);		//로그인함수
 
 int signup(char room[10], char households[10], char createid[20], char createpw[30]);		//회원가입함수
@@ -43,9 +45,13 @@ int InductionDataCreate(char apartroom[6]);
 
 int WahserDataCreate(char apartroom[6]);
 
+int RefrigeratorDataCreate(char apartroom[6]);
+
+int TVDataCreate(char apartroom[6]);
+
 int main()
 {
-
+	srand(time(NULL));		//랜덤함수 쓰기위한 선언
 	//로그인 시스템 변수
 	int userchoice1;		//유저가 실행하기 위해 선택하는 것을 넣는 변수
 	int logincheck;		//로그인 함수에서 반환값 받는 변수
@@ -199,12 +205,78 @@ int main()
 		KitchenLightDataCreate(ApartRoom[i]);	//주방 전등
 		LivingloomLightDataCreate(ApartRoom[i]);	//거실 전등
 		InductionDataCreate(ApartRoom[i]);		//주방 인덕션
+		WahserDataCreate(ApartRoom[i]);		//주방 세탁기
+		RefrigeratorDataCreate(ApartRoom[i]);		//주방 냉장고
+		TVDataCreate(ApartRoom[i]);		//거실 TV
+
+	}
+
+	system("pause");
+
+	int cuschoice;		//고객 선택
+	
+
+	char takestr[60];		//파일에서 문장 가져옴
+	char* tempid;
+	char* takeroom;		//가져온 문장에서 호수만 추출
+	int userroom;		//로그인한 사용자 호수
+
+	FILE* fp;
+	fp = fopen("IOTuser.txt", "r");
+	while (!feof(fp))
+	{
+		fgets(takestr, sizeof(takestr), fp);
+		takeroom = strtok(takestr, " ,");
+			userid
+	}
 
 
+
+	for (;;)
+	{
+
+		system("cls");		//한 번 싹 지우고 깔끔하게 시작
+		printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 고객님 안녕하세요 스마트홈 관리 시스템입니다.ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n");
+		printf("                                     원하시는 기능을 입력해주세요\n\n");
+		printf("                                     <1>. 전력 소모가 제일 많은 기기 안내 \n\n");
+		printf("                                     <2>. 총 사용 전력 안내\n\n");
+		printf("                                     <3>. 사용자 패턴 분석 및 서비스 추천\n\n");
+		printf("                                     <4>. 전력이 낭비되고 있는 기기 안내\n\n");
+		printf("                                     <0>. 시스템 종료\n\n\n");
+
+		printf("선택=> ");
+		scanf("%d",	&cuschoice);
+
+		if (cuschoice == 1)
+		{
+			
+		}
+
+		else if (cuschoice == 2)
+		{
+
+		}
+
+		else if (cuschoice == 3)
+		{
+
+		}
+
+		else if (cuschoice == 4)
+		{
+
+		}
+
+		else if (cuschoice == 0)
+		{
+
+		}
 	}
 	
 
-	
+
+
+
 	return 0;
 }
 
@@ -397,8 +469,7 @@ int	Room1LightDataCreate(char apartroom[6])
 	timelist = NULL;
 	TN* newnode;
 	TN* current = NULL, * follow = NULL, *checker=NULL,*testcheck=NULL;
-	srand(time(NULL));		//랜덤함수 쓰기위한 선언
-	
+
 	FILE* fp;
 
 	int errorcount = 0;
@@ -410,6 +481,12 @@ int	Room1LightDataCreate(char apartroom[6])
 	int room1_1temp = 0;
 	int room1_2temp = 0;
 	int room1_time=0;
+
+	int sectemp = 0;
+	int mintemp = 0;
+
+	int room1_endmin = 0;
+	int room1_endsec = 0;
 
 	int wakeup=0;
 
@@ -448,9 +525,26 @@ int	Room1LightDataCreate(char apartroom[6])
 					room1_1temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//킨 시간을 초로 변환
 
 					room1_hourlong = rand() % 3 + 1;		//시간 지속시간
-					room1_min = rand() % 61;	//끄는 분 생성
-					room1_sec = rand() % 61;	//끄는 초 생성
+					room1_endmin = rand() % 61;	//끄는 분 생성
+					room1_endsec = rand() % 61;	//끄는 초 생성
+
 					room1_hour = room1_hour + room1_hourlong;//시간 늘어난거 더해주기
+					
+					//시간00이 되기위해 만든 부분		-죄송합니다..  새벽에 한 부분이다보니 주석이 이상할 수도 있습니다.. 그래도 정신 붙잡고 열심히 개발하겠습니다!
+					sectemp = room1_sec + room1_endsec;
+					if (60 <= sectemp)
+					{
+						room1_min = room1_min + 1;
+						sectemp = sectemp - 60;
+					}
+
+					mintemp = room1_min + room1_endmin;
+					if (60 <= mintemp)
+					{
+						room1_hour = room1_hour + 1;
+						mintemp = mintemp - 60;
+					}
+
 
 					room1_2temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//끈 시간을 초로 변환
 
@@ -621,7 +715,6 @@ int	Room2LightDataCreate(char apartroom[6])
 	timelist = NULL;
 	TN* newnode;
 	TN* current = NULL, * follow = NULL, * checker = NULL, * testcheck = NULL;
-	srand(time(NULL));		//랜덤함수 쓰기위한 선언
 
 	FILE* fp;
 
@@ -840,8 +933,7 @@ int	Room3LightDataCreate(char apartroom[6])
 	timelist = NULL;
 	TN* newnode;
 	TN* current = NULL, * follow = NULL, * checker = NULL, * testcheck = NULL;
-	srand(time(NULL));		//랜덤함수 쓰기위한 선언
-
+	
 	FILE* fp;
 
 	int errorcount = 0;
@@ -1057,8 +1149,7 @@ int	KitchenLightDataCreate(char apartroom[6])
 	timelist = NULL;
 	TN* newnode;
 	TN* current = NULL, * follow = NULL, * checker = NULL, * testcheck = NULL;
-	srand(time(NULL));		//랜덤함수 쓰기위한 선언
-
+	
 	FILE* fp;
 
 	int errorcount = 0;
@@ -1274,8 +1365,7 @@ int	LivingloomLightDataCreate(char apartroom[6])
 	timelist = NULL;
 	TN* newnode;
 	TN* current = NULL, * follow = NULL, * checker = NULL, * testcheck = NULL;
-	srand(time(NULL));		//랜덤함수 쓰기위한 선언
-
+	
 	FILE* fp;
 
 	int errorcount = 0;
@@ -1492,8 +1582,7 @@ int InductionDataCreate(char apartroom[6])
 	timelist = NULL;
 	TN* newnode;
 	TN* current = NULL, * follow = NULL, * checker = NULL, * testcheck = NULL;
-	srand(time(NULL));		//랜덤함수 쓰기위한 선언
-
+	
 	FILE* fp;
 
 	int errorcount = 0;
@@ -1741,7 +1830,7 @@ int WahserDataCreate(char apartroom[6])
 	timelist = NULL;
 	TN* newnode;
 	TN* current = NULL, * follow = NULL, * checker = NULL, * testcheck = NULL;
-	srand(time(NULL));		//랜덤함수 쓰기위한 선언
+	
 
 	FILE* fp;
 
@@ -1773,7 +1862,7 @@ int WahserDataCreate(char apartroom[6])
 		timelist = NULL;		//값을 넣기위해서 만든 연결리스트는 계속 초기화해줍니다. 아니면 겹쳐서 계속 시간이 쌓이게 됩니다.
 
 		wakeup = rand() % 3 + 6;		//6~8까지 랜덤 숫자
-		wahser_time = rand() % 5;		//세탁기 하루에 몇 번 켰는지 정하는 거
+		wahser_time = rand() % 2;		//세탁기 하루에 몇 번 켰는지 정하는 거
 
 		if (wahser_time == 0)
 		{
@@ -1801,7 +1890,7 @@ int WahserDataCreate(char apartroom[6])
 
 				room1_1temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//킨 시간을 초로 변환
 
-				room1_hourlong = 0;		//시간 지속시간 0시간으로 고정
+				room1_hourlong = 1;		//시간 지속시간 0시간으로 고정
 				kit_endmin = rand() % 61;	//끄는 분 생성
 				kit_endsec = rand() % 61;	//끄는 초 생성
 
@@ -1979,3 +2068,507 @@ int WahserDataCreate(char apartroom[6])
 
 	return 0;
 }
+
+//냉장고 데이터 생성		//냉장고 데이터 생성		//냉장고 데이터 생성		//냉장고 데이터 생성		//냉장고 데이터 생성		//냉장고 데이터 생성		
+int RefrigeratorDataCreate(char apartroom[6])
+{
+	TN* timelist;		//시간 담아둘 리스트 선언
+	timelist = NULL;
+	TN* newnode;
+	TN* current = NULL, * follow = NULL, * checker = NULL, * testcheck = NULL;
+
+
+	FILE* fp;
+
+	int errorcount = 0;
+
+	int room1_hour = 0;
+	int room1_min = 0;
+	int room1_sec = 0;
+
+	int kit_endhour = 0;
+	int kit_endmin = 0;
+	int kit_endsec = 0;
+
+	int mintemp = 0;
+	int sectemp = 0;
+
+	int room1_hourlong = 0;
+	int room1_1temp = 0;
+	int room1_2temp = 0;
+	int refrigerator_time = 0;
+
+
+
+	int wakeup = 0;
+
+	fp = fopen("IOTdata.txt", "a");
+	for (int day = 1; day <= 30; day++)
+	{
+		timelist = NULL;		//값을 넣기위해서 만든 연결리스트는 계속 초기화해줍니다. 아니면 겹쳐서 계속 시간이 쌓이게 됩니다.
+
+		wakeup = rand() % 3 + 6;		//6~8까지 랜덤 숫자
+		refrigerator_time = rand() % 15;		//냉장고 하루에 몇 열고 닫았는지 정하는 거
+
+		if (refrigerator_time == 0)
+		{
+			//room1_time이 킨 적이 하루에 한 번도 없을 때 pass 하도록 하는 것
+		}
+
+		else
+		{
+			for (int i = 1; i <= refrigerator_time; i++)
+			{
+				errorcount = 0;		//일단 오류가 없는걸로 초기화
+				current = timelist;
+				follow = timelist;
+				checker = timelist;
+				testcheck = timelist;
+
+				if (checker == NULL)		//처음 넣게되면 연결리스트에 아무것도 없어서 무한루프에 빠져서 추가해주기
+				{
+					errorcount = 0;
+				}
+
+				room1_hour = rand() % (24 - wakeup + 1) + wakeup;	//일어난 시간부터 자기전까지의 시간 중 전등 시간 배분
+				room1_min = rand() % 61;	//키는 분 생성
+				room1_sec = rand() % 61;	//키는 초 생성
+
+				room1_1temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//킨 시간을 초로 변환
+
+				room1_hourlong = 0;		//시간 지속시간 0시간으로 고정
+				kit_endmin = rand() % 2;	//끄는 분 생성
+				kit_endsec = rand() % 61;	//끄는 초 생성
+
+				room1_hour = room1_hour + room1_hourlong;//시간 늘어난거 더해주기
+
+				//인덕션을 위해 만들어준 추가 코드(00이 되기 위해 만든 코드부분)
+				sectemp = room1_sec + kit_endsec;
+				if (60 <= sectemp)
+				{
+					room1_min = room1_min + 1;
+					sectemp = sectemp - 60;
+				}
+
+				mintemp = room1_min + kit_endmin;
+				if (60 <= mintemp)
+				{
+					room1_hour = room1_hour + 1;
+					mintemp = mintemp - 60;
+				}
+
+
+
+				room1_2temp = (room1_hour * 60 * 60) + (mintemp * 60) + (sectemp);		//끈 시간을 초로 변환
+
+				//이렇게 시작과 끝은 생성을 했는데, 이런 생성한 시간이 겹치는지 검토를 하도록 해야함 그러기 위해 2번째 실행부터는 이것을 거치도록함
+
+				if (i > 1)		//한번 반복하고나면 무조건 검토하도록 하는거
+				{
+					while (checker != NULL)
+					{
+						if (((room1_1temp < checker->ontime) && (room1_2temp < checker->ontime)) || ((room1_1temp > checker->offtime) && (room1_2temp > checker->offtime)))
+						{
+							checker = checker->next;
+						}
+
+						else
+						{
+							errorcount = 0;
+							checker = checker->next;
+						}
+					}
+				}
+
+				if (errorcount == 0)
+				{
+					newnode = (TN*)malloc(sizeof(TN));
+					newnode->ontime = room1_1temp;		//킨시간
+					newnode->offtime = room1_2temp;		//끈시간
+
+					while ((current != NULL) && (current->ontime < newnode->ontime))
+					{
+						if (room1_1temp < newnode->ontime)
+						{
+							break;
+						}
+
+						else
+						{
+							follow = current;
+							current = current->next;
+						}
+					}
+					newnode->next = current;
+					if (current == timelist)		//아무것도 없을 경우 첫번째 칸에 넣기
+					{
+						timelist = newnode;
+					}
+
+					else
+					{
+						follow->next = newnode;
+					}
+				}
+				else if (errorcount == 1)		//시간이 겹치는 문제가 있을 경우
+				{
+					i = i - 1;		//횟수 1회 차감하여 반복하도록함
+				}
+
+			}
+
+
+
+			//파일 넣을 준비
+			int starttime;
+			int endtime;
+
+			int changeday = 0;
+
+			int starthour = 0;
+			int startmin = 0;
+			int startsec = 0;
+
+			int endhour = 0;
+			int endmin = 0;
+			int endsec = 0;
+
+			char hourval[10];
+			char minval[10];
+			char secval[10];
+			char dayval[10];
+
+			current = timelist;
+			follow = timelist;
+			checker = timelist;
+			testcheck = timelist;
+
+			while (current != NULL)
+			{
+
+				starttime = current->ontime;
+				endtime = current->offtime;
+
+				//시작하는 시간
+				starthour = starttime / 60 / 60;
+				startmin = (starttime - (starthour * 60 * 60)) / 60;
+				startsec = (starttime - (starthour * 60 * 60) - (startmin * 60));
+
+				//끝나는 시간
+				endhour = endtime / 60 / 60;
+				endmin = (endtime - (endhour * 60 * 60)) / 60;
+				endsec = (endtime - (endhour * 60 * 60) - (endmin * 60));
+
+				sprintf(hourval, "%d", starthour);
+				sprintf(minval, "%d", startmin);
+				sprintf(secval, "%d", startsec);
+
+				fputs("호수:", fp);
+				fputs(apartroom, fp);
+
+				fputs(" Kitchen:냉장고", fp);
+
+				fputs(" 사용일:", fp);
+				changeday = day;		//일단 현재 일자가 들어가도록 함
+
+
+				sprintf(dayval, "%d", changeday);
+				fputs(dayval, fp);
+
+				fputs(" 사용시간:", fp);
+				fputs(hourval, fp);
+				fputs(":", fp);
+				fputs(minval, fp);
+				fputs(":", fp);
+				fputs(secval, fp);
+
+				fputs("~", fp);
+
+
+				sprintf(hourval, "%d", endhour);
+				sprintf(minval, "%d", endmin);
+				sprintf(secval, "%d", endsec);
+
+				fputs(hourval, fp);
+				fputs(":", fp);
+				fputs(minval, fp);
+				fputs(":", fp);
+				fputs(secval, fp);
+
+				fputs("\n", fp);
+
+
+				current = current->next;
+			}
+
+
+
+		}
+
+
+	}
+
+	fclose(fp);
+
+
+
+	return 0;
+}
+
+
+//TV 데이터 생성		//TV 데이터 생성		//TV 데이터 생성		//TV 데이터 생성		//TV 데이터 생성		//TV 데이터 생성		
+int TVDataCreate(char apartroom[6])
+{
+	TN* timelist;		//시간 담아둘 리스트 선언
+	timelist = NULL;
+	TN* newnode;
+	TN* current = NULL, * follow = NULL, * checker = NULL, * testcheck = NULL;
+
+
+	FILE* fp;
+
+	int errorcount = 0;
+
+	int room1_hour = 0;
+	int room1_min = 0;
+	int room1_sec = 0;
+
+	int kit_endhour = 0;
+	int kit_endmin = 0;
+	int kit_endsec = 0;
+
+	int mintemp = 0;
+	int sectemp = 0;
+
+	int room1_hourlong = 0;
+	int room1_1temp = 0;
+	int room1_2temp = 0;
+	int tv_time = 0;
+
+
+
+	int wakeup = 0;
+
+	fp = fopen("IOTdata.txt", "a");
+	for (int day = 1; day <= 30; day++)
+	{
+		timelist = NULL;		//값을 넣기위해서 만든 연결리스트는 계속 초기화해줍니다. 아니면 겹쳐서 계속 시간이 쌓이게 됩니다.
+
+		wakeup = rand() % 3 + 6;		//6~8까지 랜덤 숫자
+		tv_time = rand() % 5;		//tv 하루에 몇 번 켰는지 정하는 거(0~4번)
+
+		if (tv_time == 0)
+		{
+			//room1_time이 킨 적이 하루에 한 번도 없을 때 pass 하도록 하는 것
+		}
+
+		else
+		{
+			for (int i = 1; i <= tv_time; i++)
+			{
+				errorcount = 0;		//일단 오류가 없는걸로 초기화
+				current = timelist;
+				follow = timelist;
+				checker = timelist;
+				testcheck = timelist;
+
+				if (checker == NULL)		//처음 넣게되면 연결리스트에 아무것도 없어서 무한루프에 빠져서 추가해주기
+				{
+					errorcount = 0;
+				}
+
+				room1_hour = rand() % (24 - wakeup + 1) + wakeup;	//일어난 시간부터 자기전까지의 시간 중 전등 시간 배분
+				room1_min = rand() % 61;	//키는 분 생성
+				room1_sec = rand() % 61;	//키는 초 생성
+
+				room1_1temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//킨 시간을 초로 변환
+
+				room1_hourlong = rand()%4;		//시간 지속시간 0시간으로 고정
+				kit_endmin = rand() % 2;	//끄는 분 생성
+				kit_endsec = rand() % 61;	//끄는 초 생성
+
+				room1_hour = room1_hour + room1_hourlong;//시간 늘어난거 더해주기
+
+				//시간(00이 되기 위해 만든 코드부분)
+				sectemp = room1_sec + kit_endsec;
+				if (60 <= sectemp)
+				{
+					room1_min = room1_min + 1;
+					sectemp = sectemp - 60;
+				}
+
+				mintemp = room1_min + kit_endmin;
+				if (60 <= mintemp)
+				{
+					room1_hour = room1_hour + 1;
+					mintemp = mintemp - 60;
+				}
+
+
+
+				room1_2temp = (room1_hour * 60 * 60) + (mintemp * 60) + (sectemp);		//끈 시간을 초로 변환
+
+				//이렇게 시작과 끝은 생성을 했는데, 이런 생성한 시간이 겹치는지 검토를 하도록 해야함 그러기 위해 2번째 실행부터는 이것을 거치도록함
+
+				if (i > 1)		//한번 반복하고나면 무조건 검토하도록 하는거
+				{
+					while (checker != NULL)
+					{
+						if (((room1_1temp < checker->ontime) && (room1_2temp < checker->ontime)) || ((room1_1temp > checker->offtime) && (room1_2temp > checker->offtime)))
+						{
+							checker = checker->next;
+						}
+
+						else
+						{
+							errorcount = 0;
+							checker = checker->next;
+						}
+					}
+				}
+
+				if (errorcount == 0)
+				{
+					newnode = (TN*)malloc(sizeof(TN));
+					newnode->ontime = room1_1temp;		//킨시간
+					newnode->offtime = room1_2temp;		//끈시간
+
+					while ((current != NULL) && (current->ontime < newnode->ontime))
+					{
+						if (room1_1temp < newnode->ontime)
+						{
+							break;
+						}
+
+						else
+						{
+							follow = current;
+							current = current->next;
+						}
+					}
+					newnode->next = current;
+					if (current == timelist)		//아무것도 없을 경우 첫번째 칸에 넣기
+					{
+						timelist = newnode;
+					}
+
+					else
+					{
+						follow->next = newnode;
+					}
+				}
+				else if (errorcount == 1)		//시간이 겹치는 문제가 있을 경우
+				{
+					i = i - 1;		//횟수 1회 차감하여 반복하도록함
+				}
+
+			}
+
+
+
+			//파일 넣을 준비
+			int starttime;
+			int endtime;
+
+			int changeday = 0;
+
+			int starthour = 0;
+			int startmin = 0;
+			int startsec = 0;
+
+			int endhour = 0;
+			int endmin = 0;
+			int endsec = 0;
+
+			char hourval[10];
+			char minval[10];
+			char secval[10];
+			char dayval[10];
+
+			current = timelist;
+			follow = timelist;
+			checker = timelist;
+			testcheck = timelist;
+
+			while (current != NULL)
+			{
+
+				starttime = current->ontime;
+				endtime = current->offtime;
+
+				//시작하는 시간
+				starthour = starttime / 60 / 60;
+				startmin = (starttime - (starthour * 60 * 60)) / 60;
+				startsec = (starttime - (starthour * 60 * 60) - (startmin * 60));
+
+				//끝나는 시간
+				endhour = endtime / 60 / 60;
+				endmin = (endtime - (endhour * 60 * 60)) / 60;
+				endsec = (endtime - (endhour * 60 * 60) - (endmin * 60));
+
+				sprintf(hourval, "%d", starthour);
+				sprintf(minval, "%d", startmin);
+				sprintf(secval, "%d", startsec);
+
+				fputs("호수:", fp);
+				fputs(apartroom, fp);
+
+				fputs(" Livingroom:TV", fp);
+
+				fputs(" 사용일:", fp);
+				changeday = day;		//일단 현재 일자가 들어가도록 함
+
+
+				sprintf(dayval, "%d", changeday);
+				fputs(dayval, fp);
+
+				fputs(" 사용시간:", fp);
+				fputs(hourval, fp);
+				fputs(":", fp);
+				fputs(minval, fp);
+				fputs(":", fp);
+				fputs(secval, fp);
+
+				fputs("~", fp);
+
+
+				sprintf(hourval, "%d", endhour);
+				sprintf(minval, "%d", endmin);
+				sprintf(secval, "%d", endsec);
+
+				fputs(hourval, fp);
+				fputs(":", fp);
+				fputs(minval, fp);
+				fputs(":", fp);
+				fputs(secval, fp);
+
+				fputs("\n", fp);
+
+				current = current->next;
+
+
+			}
+
+
+
+		}
+
+
+	}
+
+	fclose(fp);
+
+
+
+	return 0;
+}
+
+
+//전력 사용량 가장 많은 순서대로 연결리스트에 저장하는 것
+NODE* TopUsage(NODE* list)
+{
+
+
+
+}
+
