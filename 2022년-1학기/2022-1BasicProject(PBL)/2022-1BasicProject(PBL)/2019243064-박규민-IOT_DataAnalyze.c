@@ -227,16 +227,22 @@ int main()
 	{
 		fgets(takestr, sizeof(takestr), fp);
 		takeroom = strtok(takestr, " ,");
-			userid
-	}
+		tempid = strtok(NULL, " ,");
 
+		if (strcmp(tempid, userid) == 0)
+		{
+			break;
+		}
+
+	}
+	fclose(fp);
 
 
 	for (;;)
 	{
 
 		system("cls");		//한 번 싹 지우고 깔끔하게 시작
-		printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 고객님 안녕하세요 스마트홈 관리 시스템입니다.ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n");
+		printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ %s 고객님 안녕하세요 스마트홈 관리 시스템입니다.ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n",takeroom);
 		printf("                                     원하시는 기능을 입력해주세요\n\n");
 		printf("                                     <1>. 전력 소모가 제일 많은 기기 안내 \n\n");
 		printf("                                     <2>. 총 사용 전력 안내\n\n");
