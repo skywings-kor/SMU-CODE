@@ -11,16 +11,16 @@ typedef struct timenode
 	struct timenode* next;
 }TN;
 
-typedef struct node {
+typedef struct TopUsageNODE {
 
 	char room[10];
 	char households[10];
 	char id[20];
 	char pw[30];
 
-}NODE;
+}TopUsageNODE;
 
-NODE* TopUsage(NODE* list); 
+
 
 int loginsys(char userid[20], char userpw[30]);		//로그인함수
 
@@ -48,6 +48,11 @@ int WahserDataCreate(char apartroom[6]);
 int RefrigeratorDataCreate(char apartroom[6]);
 
 int TVDataCreate(char apartroom[6]);
+
+//사용 전력량 제일 많은 기기 순
+TopUsageNODE* TopUsage(TopUsageNODE* list, char roomnum[10]);
+
+
 
 int main()
 {
@@ -236,10 +241,14 @@ int main()
 
 	}
 	fclose(fp);
+	
+	
 
 
 	for (;;)
 	{
+		//노드 변수 초기화
+		TopUsageNODE* list = NULL;
 
 		system("cls");		//한 번 싹 지우고 깔끔하게 시작
 		printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ %s 고객님 안녕하세요 스마트홈 관리 시스템입니다.ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n",takeroom);
@@ -255,7 +264,7 @@ int main()
 
 		if (cuschoice == 1)
 		{
-			
+			list=TopUsage(list,takeroom);
 		}
 
 		else if (cuschoice == 2)
@@ -552,7 +561,7 @@ int	Room1LightDataCreate(char apartroom[6])
 					}
 
 
-					room1_2temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//끈 시간을 초로 변환
+					room1_2temp = (room1_hour * 60 * 60) + (sectemp * 60) + (mintemp);		//끈 시간을 초로 변환
 
 					//이렇게 시작과 끝은 생성을 했는데, 이런 생성한 시간이 겹치는지 검토를 하도록 해야함 그러기 위해 2번째 실행부터는 이것을 거치도록함
 
@@ -2571,9 +2580,35 @@ int TVDataCreate(char apartroom[6])
 
 
 //전력 사용량 가장 많은 순서대로 연결리스트에 저장하는 것
-NODE* TopUsage(NODE* list)
+TopUsageNODE* TopUsage(TopUsageNODE* list, char roomnum[10])
 {
+	FILE* fp;
+	fp = fopen("IOTdata.txt", "r");
 
+	char str[100];
+	char* temp;
+	char* takeroomnum;	//호수
+	char* takeroom;		//방
+	char* things;		//사용한 제품
+	char* day;		//사용한 날짜
+	char* starthour;
+	char* endhour;
+	
+	char* startmin;
+	char* endmin;
+	
+	char* startsec;
+	char* endsec;
+
+	while (!feof(fp))
+	{
+		fgets(str,sizeof(str),fp);
+		temp = strtok(str, " : \n ~");
+
+		takeroomnum = strtok(NULL, " : \n ~");
+
+
+	}
 
 
 }
