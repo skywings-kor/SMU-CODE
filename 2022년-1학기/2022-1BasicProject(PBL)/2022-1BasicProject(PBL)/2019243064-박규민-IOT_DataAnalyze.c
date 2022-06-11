@@ -4,6 +4,9 @@
 #include <time.h>
 #pragma warning (disable:4996)
 
+#define clothwasher=10;
+
+
 typedef struct timenode
 {
 	int ontime;
@@ -13,10 +16,12 @@ typedef struct timenode
 
 typedef struct TopUsageNODE {
 
-	char room[10];
-	char households[10];
-	char id[20];
-	char pw[30];
+	char roomnumber[10];
+	char inroom[10];
+	char usethings[20];
+	int useday;
+	int startTime;
+	int endTime;
 
 }TopUsageNODE;
 
@@ -2600,13 +2605,48 @@ TopUsageNODE* TopUsage(TopUsageNODE* list, char roomnum[10])
 	char* startsec;
 	char* endsec;
 
+	int sth;
+	int edh;
+
+	int stm;
+	int edm;
+
+	int sts;
+	int eds;
+
+
+
 	while (!feof(fp))
 	{
-		fgets(str,sizeof(str),fp);
+		fgets(str,sizeof(str),fp);		//호수 문자 담아두는거
 		temp = strtok(str, " : \n ~");
 
 		takeroomnum = strtok(NULL, " : \n ~");
+		takeroom = strtok(NULL, " : \n ~");
+		things = strtok(NULL, " : \n ~");
+		
+		temp = strtok(NULL, " : \n ~");		//사용일 문자 담아두는거
+		
+		day = strtok(NULL, " : \n ~");
 
+		temp = strtok(NULL, " : \n ~");		//사용시간 문자 담아두는거
+
+		starthour = strtok(NULL, " : \n ~");
+		startmin = strtok(NULL, " : \n ~");
+		startsec = strtok(NULL, " : \n ~");
+
+		endhour = strtok(NULL, " : \n ~");
+		endmin = strtok(NULL, " : \n ~");
+		endsec = strtok(NULL, " : \n ~");
+			
+		sth = atoi(starthour);
+		edh = atoi(endhour);
+		stm = atoi(startmin);
+		edm = atoi(endmin);
+		sts = atoi(startsec);
+		eds = atoi(endsec);
+
+		
 
 	}
 
