@@ -4,7 +4,6 @@
 #include <time.h>
 #pragma warning (disable:4996)
 
-#define clothwasher=10;
 
 
 typedef struct timenode
@@ -20,9 +19,8 @@ typedef struct TopUsageNODE {
 	char inroom[10];
 	char usethings[20];
 	int useday;
-	int startTime;
-	int endTime;
-
+	int difTime;
+	struct TopUsageNODE* next;
 }TopUsageNODE;
 
 
@@ -55,7 +53,7 @@ int RefrigeratorDataCreate(char apartroom[6]);
 int TVDataCreate(char apartroom[6]);
 
 //사용 전력량 제일 많은 기기 순
-TopUsageNODE* TopUsage(TopUsageNODE* list, char roomnum[10]);
+TopUsageNODE* TopUsage(TopUsageNODE* list);
 
 
 
@@ -249,14 +247,12 @@ int main()
 	
 	
 
-
 	for (;;)
 	{
 		//노드 변수 초기화
 		TopUsageNODE* list = NULL;
-
 		system("cls");		//한 번 싹 지우고 깔끔하게 시작
-		printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ %s 고객님 안녕하세요 스마트홈 관리 시스템입니다.ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n",takeroom);
+		printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 고객님 안녕하세요 스마트홈 관리 시스템입니다.ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n");
 		printf("                                     원하시는 기능을 입력해주세요\n\n");
 		printf("                                     <1>. 전력 소모가 제일 많은 기기 안내 \n\n");
 		printf("                                     <2>. 총 사용 전력 안내\n\n");
@@ -269,7 +265,7 @@ int main()
 
 		if (cuschoice == 1)
 		{
-			list=TopUsage(list,takeroom);
+			list=TopUsage(list);
 		}
 
 		else if (cuschoice == 2)
@@ -2585,9 +2581,12 @@ int TVDataCreate(char apartroom[6])
 
 
 //전력 사용량 가장 많은 순서대로 연결리스트에 저장하는 것
-TopUsageNODE* TopUsage(TopUsageNODE* list, char roomnum[10])
+TopUsageNODE* TopUsage(TopUsageNODE* list)
 {
 	FILE* fp;
+	fp = fopen("IOTuser.txt", "r");
+
+
 	fp = fopen("IOTdata.txt", "r");
 
 	char str[100];
@@ -2614,10 +2613,20 @@ TopUsageNODE* TopUsage(TopUsageNODE* list, char roomnum[10])
 	int sts;
 	int eds;
 
+	int starttime;
+	int endtime;
+	int total;
 
+	TopUsageNODE* current = NULL, * follow = NULL, * checker=NULL,*newnode=NULL;
+
+	int i=0;
 
 	while (!feof(fp))
 	{
+		current = list;
+		follow = list;
+		
+
 		fgets(str,sizeof(str),fp);		//호수 문자 담아두는거
 		temp = strtok(str, " : \n ~");
 
@@ -2630,7 +2639,7 @@ TopUsageNODE* TopUsage(TopUsageNODE* list, char roomnum[10])
 		day = strtok(NULL, " : \n ~");
 
 		temp = strtok(NULL, " : \n ~");		//사용시간 문자 담아두는거
-
+		
 		starthour = strtok(NULL, " : \n ~");
 		startmin = strtok(NULL, " : \n ~");
 		startsec = strtok(NULL, " : \n ~");
@@ -2638,7 +2647,7 @@ TopUsageNODE* TopUsage(TopUsageNODE* list, char roomnum[10])
 		endhour = strtok(NULL, " : \n ~");
 		endmin = strtok(NULL, " : \n ~");
 		endsec = strtok(NULL, " : \n ~");
-			
+		
 		sth = atoi(starthour);
 		edh = atoi(endhour);
 		stm = atoi(startmin);
@@ -2646,10 +2655,55 @@ TopUsageNODE* TopUsage(TopUsageNODE* list, char roomnum[10])
 		sts = atoi(startsec);
 		eds = atoi(endsec);
 
+		//시간 계산
+		starttime = (sth * 60 * 60) + (stm * 60) + (sts);
+		endtime = (edh * 60 * 60) + (edm * 60) + (eds);
+
+		total = endtime - starttime;
 		
 
+		newnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+
+		strcmp(newnode->roomnumber, takeroomnum);
+		strcmp(newnode->inroom, takeroom);
+		strcmp(newnode->usethings, things);
+		newnode->useday = day;
+		newnode->difTime = total;
+
+		
+
+
+		while (current != NULL)
+		{
+			if (newnode->difTime <= current->difTime)
+			{
+				break;
+			}
+			follow = current;
+			current = current->next;
+		}
+		newnode->next = current;
+		if (current == list)		//아무것도 없을 경우 첫번째 칸에 넣기
+		{
+			list = newnode;
+		}
+
+		else
+		{
+			follow->next = newnode;
+		}
+
+
 	}
+	checker = list;
 
+	/*while (checker != NULL)
+	{
+		printf("%s %s %s %d %d", checker->roomnumber, checker->inroom, checker->usethings, checker->useday, checker->difTime);
+		checker = checker->next;
+	}*/
 
+	fclose(fp);
+	return list;
 }
 
