@@ -25,6 +25,8 @@ typedef struct TopUsageNODE {
 
 
 
+int ResetData();
+
 int loginsys(char userid[20], char userpw[30]);		//로그인함수
 
 int signup(char room[10], char households[10], char createid[20], char createpw[30]);		//회원가입함수
@@ -203,9 +205,12 @@ int main()
 
 	system("cls");
 
+	ResetData();//파일 그전에 한 번 초기화 해줌(기존 데이터를 없앰)
+
 	printf("데이터 생성을 시작합니다...\n\n");
 	for (int i = 0; i < 36; i++)		//모든 호수를 생성하기위해 반복문 사용
 	{
+		
 		printf("%s 데이터 생성 완료..\n", ApartRoom[i]);
 		Room1LightDataCreate(ApartRoom[i]);		//방1 전등
 		Room2LightDataCreate(ApartRoom[i]);		//방2 전등
@@ -266,6 +271,7 @@ int main()
 		if (cuschoice == 1)
 		{
 			list=TopUsage(list);
+			system("pause");
 		}
 
 		else if (cuschoice == 2)
@@ -478,9 +484,19 @@ int findpwsys(char findid[20])
 
 }
 
+//파일 한 번 싹 지우는 용도 함수
+int ResetData()
+{
+	FILE* fp;
+	fp = fopen("IOTdata.txt", "w");
+
+	fclose(fp);
+}
+
 //전등 데이터 생섬 함수		전등 데이터 생섬 함수		전등 데이터 생섬 함수
 int	Room1LightDataCreate(char apartroom[6])
 {
+	int startcount = 0;
 	TN* timelist;		//시간 담아둘 리스트 선언
 	timelist = NULL;
 	TN* newnode;
@@ -666,42 +682,88 @@ int	Room1LightDataCreate(char apartroom[6])
 					sprintf(minval, "%d", startmin);
 					sprintf(secval, "%d", startsec);
 
-					fputs("호수:", fp);
-					fputs(apartroom, fp);
 
-					fputs(" Room1:전등", fp);
+					if ((strcmp(apartroom, "101") == 0) && (startcount == 0))
+					{
+						startcount = startcount + 1;
+						fputs("호수:", fp);
+						fputs(apartroom, fp);
 
-					fputs(" 사용일:",fp);
-					changeday = day;		//일단 현재 일자가 들어가도록 함
+						fputs(" Room1:전등", fp);
+
+						fputs(" 사용일:", fp);
+						changeday = day;		//일단 현재 일자가 들어가도록 함
+
+
+						sprintf(dayval, "%d", changeday);
+						fputs(dayval, fp);
+
+						fputs(" 사용시간:", fp);
+						fputs(hourval, fp);
+						fputs(":", fp);
+						fputs(minval, fp);
+						fputs(":", fp);
+						fputs(secval, fp);
+
+						fputs("~", fp);
+
+
+						sprintf(hourval, "%d", endhour);
+						sprintf(minval, "%d", endmin);
+						sprintf(secval, "%d", endsec);
+
+						fputs(hourval, fp);
+						fputs(":", fp);
+						fputs(minval, fp);
+						fputs(":", fp);
+						fputs(secval, fp);
+
+
+						current = current->next;
+						
+					}
 					
+					else
+					{
+						fputs("\n", fp);
+						fputs("호수:", fp);
+						fputs(apartroom, fp);
 
-					sprintf(dayval, "%d", changeday);
-					fputs(dayval, fp);
+						fputs(" Room1:전등", fp);
 
-					fputs(" 사용시간:", fp);
-					fputs(hourval, fp);
-					fputs(":", fp);
-					fputs(minval, fp);
-					fputs(":", fp);
-					fputs(secval, fp);
-
-					fputs("~", fp);
+						fputs(" 사용일:", fp);
+						changeday = day;		//일단 현재 일자가 들어가도록 함
 
 
-					sprintf(hourval, "%d", endhour);
-					sprintf(minval, "%d", endmin);
-					sprintf(secval, "%d", endsec);
+						sprintf(dayval, "%d", changeday);
+						fputs(dayval, fp);
 
-					fputs(hourval, fp);
-					fputs(":", fp);
-					fputs(minval, fp);
-					fputs(":", fp);
-					fputs(secval, fp);
+						fputs(" 사용시간:", fp);
+						fputs(hourval, fp);
+						fputs(":", fp);
+						fputs(minval, fp);
+						fputs(":", fp);
+						fputs(secval, fp);
 
-					fputs("\n", fp);
+						fputs("~", fp);
 
 
-					current = current->next;
+						sprintf(hourval, "%d", endhour);
+						sprintf(minval, "%d", endmin);
+						sprintf(secval, "%d", endsec);
+
+						fputs(hourval, fp);
+						fputs(":", fp);
+						fputs(minval, fp);
+						fputs(":", fp);
+						fputs(secval, fp);
+
+						
+
+
+						current = current->next;
+					}
+					
 				}
 
 				
@@ -889,6 +951,7 @@ int	Room2LightDataCreate(char apartroom[6])
 				sprintf(minval, "%d", startmin);
 				sprintf(secval, "%d", startsec);
 
+				fputs("\n", fp);
 				fputs("호수:", fp);
 				fputs(apartroom, fp);
 
@@ -921,7 +984,6 @@ int	Room2LightDataCreate(char apartroom[6])
 				fputs(":", fp);
 				fputs(secval, fp);
 
-				fputs("\n", fp);
 
 
 				current = current->next;
@@ -1107,6 +1169,7 @@ int	Room3LightDataCreate(char apartroom[6])
 				sprintf(minval, "%d", startmin);
 				sprintf(secval, "%d", startsec);
 
+				fputs("\n", fp);
 				fputs("호수:", fp);
 				fputs(apartroom, fp);
 
@@ -1139,7 +1202,6 @@ int	Room3LightDataCreate(char apartroom[6])
 				fputs(":", fp);
 				fputs(secval, fp);
 
-				fputs("\n", fp);
 
 
 				current = current->next;
@@ -1323,6 +1385,7 @@ int	KitchenLightDataCreate(char apartroom[6])
 				sprintf(minval, "%d", startmin);
 				sprintf(secval, "%d", startsec);
 
+				fputs("\n", fp);
 				fputs("호수:", fp);
 				fputs(apartroom, fp);
 
@@ -1355,7 +1418,6 @@ int	KitchenLightDataCreate(char apartroom[6])
 				fputs(":", fp);
 				fputs(secval, fp);
 
-				fputs("\n", fp);
 
 
 				current = current->next;
@@ -1539,6 +1601,7 @@ int	LivingloomLightDataCreate(char apartroom[6])
 				sprintf(minval, "%d", startmin);
 				sprintf(secval, "%d", startsec);
 
+				fputs("\n", fp);
 				fputs("호수:", fp);
 				fputs(apartroom, fp);
 
@@ -1571,7 +1634,6 @@ int	LivingloomLightDataCreate(char apartroom[6])
 				fputs(":", fp);
 				fputs(secval, fp);
 
-				fputs("\n", fp);
 
 
 				current = current->next;
@@ -1784,6 +1846,7 @@ int InductionDataCreate(char apartroom[6])
 				sprintf(minval, "%d", startmin);
 				sprintf(secval, "%d", startsec);
 
+				fputs("\n", fp);
 				fputs("호수:", fp);
 				fputs(apartroom, fp);
 
@@ -1816,7 +1879,6 @@ int InductionDataCreate(char apartroom[6])
 				fputs(":", fp);
 				fputs(secval, fp);
 
-				fputs("\n", fp);
 
 
 				current = current->next;
@@ -2033,6 +2095,7 @@ int WahserDataCreate(char apartroom[6])
 				sprintf(minval, "%d", startmin);
 				sprintf(secval, "%d", startsec);
 
+				fputs("\n", fp);
 				fputs("호수:", fp);
 				fputs(apartroom, fp);
 
@@ -2065,7 +2128,6 @@ int WahserDataCreate(char apartroom[6])
 				fputs(":", fp);
 				fputs(secval, fp);
 
-				fputs("\n", fp);
 
 
 				current = current->next;
@@ -2279,6 +2341,7 @@ int RefrigeratorDataCreate(char apartroom[6])
 				sprintf(minval, "%d", startmin);
 				sprintf(secval, "%d", startsec);
 
+				fputs("\n", fp);
 				fputs("호수:", fp);
 				fputs(apartroom, fp);
 
@@ -2311,7 +2374,6 @@ int RefrigeratorDataCreate(char apartroom[6])
 				fputs(":", fp);
 				fputs(secval, fp);
 
-				fputs("\n", fp);
 
 
 				current = current->next;
@@ -2526,6 +2588,7 @@ int TVDataCreate(char apartroom[6])
 				sprintf(minval, "%d", startmin);
 				sprintf(secval, "%d", startsec);
 
+				fputs("\n", fp);
 				fputs("호수:", fp);
 				fputs(apartroom, fp);
 
@@ -2558,7 +2621,6 @@ int TVDataCreate(char apartroom[6])
 				fputs(":", fp);
 				fputs(secval, fp);
 
-				fputs("\n", fp);
 
 				current = current->next;
 
@@ -2584,124 +2646,150 @@ int TVDataCreate(char apartroom[6])
 TopUsageNODE* TopUsage(TopUsageNODE* list)
 {
 	FILE* fp;
-	fp = fopen("IOTuser.txt", "r");
-
-
 	fp = fopen("IOTdata.txt", "r");
-
-	char str[100];
-	char* temp;
-	char* takeroomnum;	//호수
-	char* takeroom;		//방
-	char* things;		//사용한 제품
-	char* day;		//사용한 날짜
-	char* starthour;
-	char* endhour;
-	
-	char* startmin;
-	char* endmin;
-	
-	char* startsec;
-	char* endsec;
-
-	int sth;
-	int edh;
-
-	int stm;
-	int edm;
-
-	int sts;
-	int eds;
-
-	int starttime;
-	int endtime;
-	int total;
 
 	TopUsageNODE* current = NULL, * follow = NULL, * checker=NULL,*newnode=NULL;
 
 	int i=0;
+	char str[70];
+	char takeroomnum[10];	//호수
+	char takeroom[20];		//방
+	char things[20];		//사용한 제품
+	char day[5];			//사용한 날짜
+
+	char starthour[10];
+	char endhour[10];
+
+	char startmin[10];
+	char endmin[10];
+
+	char startsec[10];
+	char endsec[10];
+
+	int sth = 0;
+	int edh = 0;
+
+	int stm = 0;
+	int edm = 0;
+
+	int sts = 0;
+	int eds = 0;
+
+	int starttime = 0;
+	int endtime = 0;
+	int total = 0;
+
+	int changeday = 0;
+
+	char* temp;
+
 
 	while (!feof(fp))
 	{
 		current = list;
 		follow = list;
-		
+	
 
 		fgets(str,sizeof(str),fp);		//호수 문자 담아두는거
-		temp = strtok(str, " : \n ~");
+		temp = strtok(str, " :~");
+		temp = strtok(NULL, " :~");
+		strcpy(takeroomnum, temp);
 
-		takeroomnum = strtok(NULL, " : \n ~");
-		takeroom = strtok(NULL, " : \n ~");
-		things = strtok(NULL, " : \n ~");
-		
-		temp = strtok(NULL, " : \n ~");		//사용일 문자 담아두는거
-		
-		day = strtok(NULL, " : \n ~");
-
-		temp = strtok(NULL, " : \n ~");		//사용시간 문자 담아두는거
-		
-		starthour = strtok(NULL, " : \n ~");
-		startmin = strtok(NULL, " : \n ~");
-		startsec = strtok(NULL, " : \n ~");
-
-		endhour = strtok(NULL, " : \n ~");
-		endmin = strtok(NULL, " : \n ~");
-		endsec = strtok(NULL, " : \n ~");
-		
-		sth = atoi(starthour);
-		edh = atoi(endhour);
-		stm = atoi(startmin);
-		edm = atoi(endmin);
-		sts = atoi(startsec);
-		eds = atoi(endsec);
-
-		//시간 계산
-		starttime = (sth * 60 * 60) + (stm * 60) + (sts);
-		endtime = (edh * 60 * 60) + (edm * 60) + (eds);
-
-		total = endtime - starttime;
-		
-
-		newnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
-
-		strcmp(newnode->roomnumber, takeroomnum);
-		strcmp(newnode->inroom, takeroom);
-		strcmp(newnode->usethings, things);
-		newnode->useday = day;
-		newnode->difTime = total;
-
-		
-
-
-		while (current != NULL)
+		if (strcmp(takeroomnum, "101") == 0)
 		{
-			if (newnode->difTime <= current->difTime)
+			temp = strtok(NULL, " :~");
+			strcpy(takeroom, temp);
+
+			temp = strtok(NULL, " :~");
+			strcpy(things, temp);
+
+			temp = strtok(NULL, " :~");
+			temp = strtok(NULL, " :~");
+			strcpy(day, temp);
+
+			temp = strtok(NULL, " :~\n");
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(starthour, temp);
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(startmin, temp);
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(startsec, temp);
+
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(endhour, temp);
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(endmin, temp);
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(endsec, temp);
+
+			changeday = atoi(day);
+
+			sth = atoi(starthour);
+			edh = atoi(endhour);
+			stm = atoi(startmin);
+			edm = atoi(endmin);
+			sts = atoi(startsec);
+			eds = atoi(endsec);
+
+			//시간 계산
+			starttime = (sth * 60 * 60) + (stm * 60) + (sts);
+			endtime = (edh * 60 * 60) + (edm * 60) + (eds);
+
+			total = endtime - starttime;
+
+
+			newnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+
+			strcpy(newnode->roomnumber, takeroomnum);
+			strcpy(newnode->inroom, takeroom);
+			strcpy(newnode->usethings, things);
+			newnode->useday = changeday;
+			newnode->difTime = total;
+
+
+
+
+			while (current != NULL)
 			{
-				break;
+				if (newnode->difTime <= current->difTime)
+				{
+					break;
+				}
+				follow = current;
+				current = current->next;
 			}
-			follow = current;
-			current = current->next;
-		}
-		newnode->next = current;
-		if (current == list)		//아무것도 없을 경우 첫번째 칸에 넣기
-		{
-			list = newnode;
+			newnode->next = current;
+			if (current == list)		//아무것도 없을 경우 첫번째 칸에 넣기
+			{
+				list = newnode;
+			}
+
+			else
+			{
+				follow->next = newnode;
+			}
+
 		}
 
 		else
 		{
-			follow->next = newnode;
-		}
 
+		}
 
 	}
 	checker = list;
 
-	/*while (checker != NULL)
+	while (checker != NULL)
 	{
-		printf("%s %s %s %d %d", checker->roomnumber, checker->inroom, checker->usethings, checker->useday, checker->difTime);
+		printf("%s %s %s %d %d \n", checker->roomnumber, checker->inroom, checker->usethings, checker->useday, checker->difTime);
 		checker = checker->next;
-	}*/
+	}
 
 	fclose(fp);
 	return list;
