@@ -13,13 +13,14 @@ typedef struct timenode
 	struct timenode* next;
 }TN;
 
-typedef struct TopUsageNODE {
-
+typedef struct TopUsageNODE
+{
 	char roomnumber[10];
 	char inroom[10];
 	char usethings[20];
 	int useday;
 	int difTime;
+	int totalelecUse;
 	struct TopUsageNODE* next;
 }TopUsageNODE;
 
@@ -2742,22 +2743,34 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 			endtime = (edh * 60 * 60) + (edm * 60) + (eds);
 
 			total = endtime - starttime;
-
+			
 
 			newnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
-
+				
 			strcpy(newnode->roomnumber, takeroomnum);
 			strcpy(newnode->inroom, takeroom);
 			strcpy(newnode->usethings, things);
 			newnode->useday = changeday;
 			newnode->difTime = total;
 
+			if (strcmp(newnode->usethings, "TV") == 0)
+			{
+				newnode->totalelecUse = total * 0.015;		//평균 TV 사용량 소비전력 57W
+			}
+			
+			else if (strcmp(newnode->usethings, "세탁기") == 0)
+			{
+				newnode->totalelecUse = total * 0.015;		//평균 드럼 세탁기 사용량 소비전력 2200W
+			}
 
-
-
+			else if (strcmp(newnode->usethings, "냉장고") == 0)
+			{
+				newnode->totalelecUse = total * 0.015;
+			}
+			
 			while (current != NULL)
 			{
-				if (newnode->difTime <= current->difTime)
+				if (current->difTime <= newnode->difTime)
 				{
 					break;
 				}
@@ -2774,7 +2787,6 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 			{
 				follow->next = newnode;
 			}
-
 		}
 
 		else
@@ -2794,4 +2806,5 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 	fclose(fp);
 	return list;
 }
+
 
