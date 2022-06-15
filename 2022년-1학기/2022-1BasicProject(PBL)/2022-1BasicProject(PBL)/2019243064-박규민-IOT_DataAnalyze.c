@@ -20,7 +20,8 @@ typedef struct TopUsageNODE
 	char usethings[20];
 	int useday;
 	int difTime;
-	int totalelecUse;
+	double totalelecUse;
+	double payMoney;
 	struct TopUsageNODE* next;
 }TopUsageNODE;
 
@@ -273,6 +274,7 @@ int main()
 		{
 			list=TopUsage(list);
 			system("pause");
+
 		}
 
 		else if (cuschoice == 2)
@@ -2644,6 +2646,7 @@ int TVDataCreate(char apartroom[6])
 
 
 //전력 사용량 가장 많은 순서대로 연결리스트에 저장하는 것
+
 TopUsageNODE* TopUsage(TopUsageNODE* list)
 {
 	FILE* fp;
@@ -2681,7 +2684,7 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 	int total = 0;
 
 	int changeday = 0;
-
+	double moneytemp = 0;
 	char* temp;
 
 
@@ -2696,7 +2699,7 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 		temp = strtok(NULL, " :~");
 		strcpy(takeroomnum, temp);
 
-		if (strcmp(takeroomnum, "101") == 0)
+		if (strcmp(takeroomnum, "1101") == 0)
 		{
 			temp = strtok(NULL, " :~");
 			strcpy(takeroom, temp);
@@ -2753,24 +2756,52 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 			newnode->useday = changeday;
 			newnode->difTime = total;
 
+			//1kw(1000w) 당 85원
 			if (strcmp(newnode->usethings, "TV") == 0)
 			{
-				newnode->totalelecUse = total * 0.015;		//평균 TV 사용량 소비전력 57W
+				newnode->totalelecUse = total * 0.05;		//평균 TV 사용량 소비전력 57W
+				
+				moneytemp = (total * 0.05) / 1000;
+				newnode->payMoney = moneytemp * 85;
 			}
 			
 			else if (strcmp(newnode->usethings, "세탁기") == 0)
 			{
-				newnode->totalelecUse = total * 0.015;		//평균 드럼 세탁기 사용량 소비전력 2200W
+				newnode->totalelecUse = total * 0.55;		//평균 드럼 세탁기 사용량 소비전력 2200W
+				moneytemp = (total * 0.55) / 1000;
+				newnode->payMoney = moneytemp * 85;
 			}
 
 			else if (strcmp(newnode->usethings, "냉장고") == 0)
 			{
-				newnode->totalelecUse = total * 0.015;
+				newnode->totalelecUse = total * 0.75;		//열고 닫으면 원래 온도로 돌아가기 위한 전력 소비 측정
+				moneytemp = (total * 0.75) / 1000;
+				newnode->payMoney = moneytemp * 85;
+			}
+
+			else if (strcmp(newnode->usethings, "전등") == 0)
+			{
+				newnode->totalelecUse = total * 0.003;		//스마트 전등 평균 소비전력 시간당 40W
+				moneytemp = (total * 0.003) / 1000;
+				newnode->payMoney = moneytemp * 85;
 			}
 			
+			else if (strcmp(newnode->usethings, "인덕션") == 0)
+			{
+				newnode->totalelecUse = total * 0.9;		//스마트 전등 평균 소비전력 시간당 40W
+				moneytemp = (total * 0.9) / 1000;
+				newnode->payMoney = moneytemp * 85;
+			}
+			
+			else
+			{
+				printf("test");
+			}
+
+
 			while (current != NULL)
 			{
-				if (current->difTime <= newnode->difTime)
+				if (current->totalelecUse <= newnode->totalelecUse)
 				{
 					break;
 				}
@@ -2791,16 +2822,17 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 
 		else
 		{
-
+			
 		}
 
 	}
-	checker = list;
 
+	checker = list;
 	while (checker != NULL)
 	{
-		printf("%s %s %s %d %d \n", checker->roomnumber, checker->inroom, checker->usethings, checker->useday, checker->difTime);
+		printf("호수:%s호   사용한 방:%s   사용 물건:%s   사용한 날:%d일   사용한 시간:%d초   사용한 총 전기:%.1fW   사용한 총 금액:%.1f원\n", checker->roomnumber, checker->inroom, checker->usethings, checker->useday, checker->difTime,checker->totalelecUse,checker->payMoney);
 		checker = checker->next;
+
 	}
 
 	fclose(fp);
