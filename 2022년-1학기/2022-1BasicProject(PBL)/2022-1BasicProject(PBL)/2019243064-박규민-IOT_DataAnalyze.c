@@ -13,6 +13,22 @@ typedef struct timenode
 	struct timenode* next;
 }TN;
 
+//정리 나열한 것을 넣어두기 위한 것
+typedef struct TopUsageListNODE
+{
+
+	char roomnumber[10];
+	char inroom[10];
+	char usethings[20];
+	int useday;
+	int difTime;
+	double totalelecUse;
+	double payMoney;
+	struct TopUsageListNODE* next;
+
+}TopUsageListNODE;
+
+
 typedef struct TopUsageNODE
 {
 	char roomnumber[10];
@@ -2756,7 +2772,8 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 			newnode->useday = changeday;
 			newnode->difTime = total;
 
-			//1kw(1000w) 당 85원
+			//가격 조정하는 코드 PART//가격 조정하는 코드 PART//가격 조정하는 코드 PART//가격 조정하는 코드 PART//가격 조정하는 코드 PART
+			//1kw(1000w) 당 85원 
 			if (strcmp(newnode->usethings, "TV") == 0)
 			{
 				newnode->totalelecUse = total * 0.05;		//평균 TV 사용량 소비전력 57W
@@ -2767,15 +2784,15 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 			
 			else if (strcmp(newnode->usethings, "세탁기") == 0)
 			{
-				newnode->totalelecUse = total * 0.55;		//평균 드럼 세탁기 사용량 소비전력 2200W
-				moneytemp = (total * 0.55) / 1000;
+				newnode->totalelecUse = total * 0.09;		//평균 드럼 세탁기 사용량 소비전력 2200W
+				moneytemp = (total * 0.09) / 1000;
 				newnode->payMoney = moneytemp * 85;
 			}
 
 			else if (strcmp(newnode->usethings, "냉장고") == 0)
 			{
-				newnode->totalelecUse = total * 0.75;		//열고 닫으면 원래 온도로 돌아가기 위한 전력 소비 측정
-				moneytemp = (total * 0.75) / 1000;
+				newnode->totalelecUse = total * 0.07;		//열고 닫으면 원래 온도로 돌아가기 위한 전력 소비 측정
+				moneytemp = (total * 0.07) / 1000;
 				newnode->payMoney = moneytemp * 85;
 			}
 
@@ -2788,8 +2805,8 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 			
 			else if (strcmp(newnode->usethings, "인덕션") == 0)
 			{
-				newnode->totalelecUse = total * 0.9;		//스마트 전등 평균 소비전력 시간당 40W
-				moneytemp = (total * 0.9) / 1000;
+				newnode->totalelecUse = total * 0.15;		//스마트 전등 평균 소비전력 시간당 40W
+				moneytemp = (total * 0.15) / 1000;
 				newnode->payMoney = moneytemp * 85;
 			}
 			
@@ -2826,15 +2843,402 @@ TopUsageNODE* TopUsage(TopUsageNODE* list)
 		}
 
 	}
+	double totalm = 0;
+	double totalTV = 0;
+
+	double totalRoom1Light = 0;
+	double totalRoom2Light = 0;
+	double totalRoom3Light = 0;
+	double totalLivingLight = 0;
+	double totalKitchenLight = 0;
+
+	double totalInduction = 0;
+	double totalRefre = 0;
+	double totalWasher = 0;
+	
+	TopUsageListNODE* totallist=NULL,*totalnewnode=NULL, *totalcurrent=NULL,*totalfollow=NULL,*totalchecker=NULL;
+
 
 	checker = list;
 	while (checker != NULL)
 	{
 		printf("호수:%s호   사용한 방:%s   사용 물건:%s   사용한 날:%d일   사용한 시간:%d초   사용한 총 전기:%.1fW   사용한 총 금액:%.1f원\n", checker->roomnumber, checker->inroom, checker->usethings, checker->useday, checker->difTime,checker->totalelecUse,checker->payMoney);
+
+		if (strcmp(checker->usethings, "TV") == 0)
+		{
+			totalTV = totalTV + checker->totalelecUse;
+			printf("\n\n  %.1f  \n\n", totalTV);
+		}
+
+		else if (strcmp(checker->usethings, "세탁기") == 0)
+		{
+			totalWasher = totalWasher + checker->totalelecUse;
+		}
+
+		else if (strcmp(checker->usethings, "냉장고") == 0)
+		{
+			totalRefre = totalRefre + checker->totalelecUse;
+		}
+
+		else if (strcmp(checker->usethings, "인덕션") == 0)
+		{
+			totalInduction = totalInduction + checker->totalelecUse;
+		}
+		
+		
+
+		else if ((strcmp(checker->usethings, "전등") == 0)&&(strcmp(checker->inroom,"Room1")==0))
+		{
+			totalRoom1Light = totalRoom1Light + checker->totalelecUse;
+		}
+
+		else if ((strcmp(checker->usethings, "전등") == 0)&&(strcmp(checker->inroom,"Room2")==0))
+		{
+			totalRoom2Light = totalRoom2Light + checker->totalelecUse;
+		}
+
+		else if ((strcmp(checker->usethings, "전등") == 0)&&(strcmp(checker->inroom,"Room3")==0))
+		{
+			totalRoom3Light = totalRoom3Light + checker->totalelecUse;
+		}
+
+		else if ((strcmp(checker->usethings, "전등") == 0)&&(strcmp(checker->inroom,"Kitchen")==0))
+		{
+			totalKitchenLight = totalKitchenLight + checker->totalelecUse;
+		}
+
+		else if ((strcmp(checker->usethings, "전등") == 0)&&(strcmp(checker->inroom,"Livingroom")==0))
+		{
+			totalLivingLight = totalLivingLight + checker->totalelecUse;
+			printf("\n\n%.1f\n\n", totalLivingLight);
+		}
+
+		else
+		{
+			printf("오류발생...");
+		}
+
+		
+		totalm = totalm + checker->totalelecUse;	//이건 총사용 전력안내에서..
+		
 		checker = checker->next;
 
 	}
 
+	totalnewnode=(TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+	
+	totalnewnode->totalelecUse = totalTV;
+	strcpy(totalnewnode->inroom, "거실");
+	strcpy(totalnewnode->usethings, "TV");
+	totalcurrent = totallist;
+	totalfollow = totallist;
+	while (totalcurrent != NULL)
+	{
+		if (totalcurrent->totalelecUse <= totalnewnode->totalelecUse)
+		{
+			break;
+		}
+		else
+		{
+			totalfollow = totalcurrent;
+			totalcurrent = totalcurrent->next;
+		}
+
+
+	}
+	totalnewnode->next = totalcurrent;
+	if (totallist == totalcurrent)		//아무것도 없을 경우 첫번째 칸에 넣기
+	{
+		totallist = totalnewnode;
+	}
+
+	else
+	{
+		totalfollow->next = totalnewnode;
+	}
+
+	//세탁기//세탁기//세탁기//세탁기//세탁기//세탁기//세탁기//세탁기//세탁기//세탁기//세탁기
+	totalnewnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+	totalnewnode->totalelecUse = totalWasher;
+	strcpy(totalnewnode->inroom, "부엌");
+	strcpy(totalnewnode->usethings, "세탁기");
+	totalcurrent = totallist;
+	while (totalcurrent != NULL)
+	{
+		if (totalcurrent->totalelecUse <= totalnewnode->totalelecUse)
+		{
+			break;
+		}
+		else
+		{
+			totalfollow = totalcurrent;
+			totalcurrent = totalcurrent->next;
+		}
+		
+
+	}
+	totalnewnode->next = totalcurrent;
+	if (totallist == totalcurrent)		//아무것도 없을 경우 첫번째 칸에 넣기
+	{
+		totallist = totalnewnode;
+	}
+
+	else
+	{
+		totalfollow->next = totalnewnode;
+	}
+
+	//인덕션//인덕션//인덕션//인덕션//인덕션//인덕션//인덕션//인덕션//인덕션//인덕션
+	totalnewnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+	totalnewnode->totalelecUse = totalInduction;
+	strcpy(totalnewnode->inroom, "부엌");
+	strcpy(totalnewnode->usethings, "인덕션");
+	totalcurrent = totallist;
+	totalfollow = totallist;
+	while (totalcurrent != NULL)
+	{
+		if (totalcurrent->totalelecUse <= totalnewnode->totalelecUse)
+		{
+			break;
+		}
+		else
+		{
+			totalfollow = totalcurrent;
+			totalcurrent = totalcurrent->next;
+		}
+
+
+	}
+	totalnewnode->next = totalcurrent;
+	if (totallist == totalcurrent)		//아무것도 없을 경우 첫번째 칸에 넣기
+	{
+		totallist = totalnewnode;
+	}
+
+	else
+	{
+		totalfollow->next = totalnewnode;
+	}
+
+	//냉장고//냉장고//냉장고//냉장고//냉장고//냉장고//냉장고//냉장고//냉장고//냉장고
+	totalnewnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+	totalnewnode->totalelecUse = totalRefre;
+	strcpy(totalnewnode->inroom, "부엌");
+	strcpy(totalnewnode->usethings, "냉장고");
+	totalcurrent = totallist;
+	totalfollow = totallist;
+	while (totalcurrent != NULL)
+	{
+		if (totalcurrent->totalelecUse <= totalnewnode->totalelecUse)
+		{
+			break;
+		}
+		else
+		{
+			totalfollow = totalcurrent;
+			totalcurrent = totalcurrent->next;
+		}
+
+
+	}
+	totalnewnode->next = totalcurrent;
+	if (totallist == totalcurrent)		//아무것도 없을 경우 첫번째 칸에 넣기
+	{
+		totallist = totalnewnode;
+	}
+
+	else
+	{
+		totalfollow->next = totalnewnode;
+	}
+
+
+	//방1전등//방1전등//방1전등//방1전등//방1전등//방1전등//방1전등//방1전등//방1전등//방1전등
+	totalnewnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+	totalnewnode->totalelecUse = totalRoom1Light;
+	strcpy(totalnewnode->inroom, "방1");
+	strcpy(totalnewnode->usethings, "전등");
+	totalcurrent = totallist;
+	totalfollow = totallist;
+	while (totalcurrent != NULL)
+	{
+		if (totalcurrent->totalelecUse <= totalnewnode->totalelecUse)
+		{
+			break;
+		}
+		else
+		{
+			totalfollow = totalcurrent;
+			totalcurrent = totalcurrent->next;
+		}
+
+
+	}
+	totalnewnode->next = totalcurrent;
+	if (totallist == totalcurrent)		//아무것도 없을 경우 첫번째 칸에 넣기
+	{
+		totallist = totalnewnode;
+	}
+
+	else
+	{
+		totalfollow->next = totalnewnode;
+	}
+
+	//방2전등//방2전등//방2전등//방2전등//방2전등//방2전등//방2전등//방2전등//방2전등//방2전등//방2전등//방2전등//방2전등
+	totalnewnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+	totalnewnode->totalelecUse = totalRoom2Light;
+	strcpy(totalnewnode->inroom, "방2");
+	strcpy(totalnewnode->usethings, "전등");
+	totalcurrent = totallist;
+	totalfollow = totallist;
+	while (totalcurrent != NULL)
+	{
+		if (totalcurrent->totalelecUse <= totalnewnode->totalelecUse)
+		{
+			break;
+		}
+		else
+		{
+			totalfollow = totalcurrent;
+			totalcurrent = totalcurrent->next;
+		}
+
+
+	}
+	totalnewnode->next = totalcurrent;
+	if (totallist == totalcurrent)		//아무것도 없을 경우 첫번째 칸에 넣기
+	{
+		totallist = totalnewnode;
+	}
+
+	else
+	{
+		totalfollow->next = totalnewnode;
+	}
+
+	//방3전등//방3전등//방3전등//방3전등//방3전등//방3전등//방3전등//방3전등//방3전등//방3전등//방3전등//방3전등//방3전등//방3전등//방3전등
+	totalnewnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+	totalnewnode->totalelecUse = totalRoom3Light;
+	strcpy(totalnewnode->inroom, "방3");
+	strcpy(totalnewnode->usethings, "전등");
+	totalcurrent = totallist;
+	totalfollow = totallist;
+	while (totalcurrent != NULL)
+	{
+		if (totalcurrent->totalelecUse <= totalnewnode->totalelecUse)
+		{
+			break;
+		}
+		else
+		{
+			totalfollow = totalcurrent;
+			totalcurrent = totalcurrent->next;
+		}
+
+
+	}
+	totalnewnode->next = totalcurrent;
+	if (totallist == totalcurrent)		//아무것도 없을 경우 첫번째 칸에 넣기
+	{
+		totallist = totalnewnode;
+	}
+
+	else
+	{
+		totalfollow->next = totalnewnode;
+	}
+
+	//부엌전등//부엌전등//부엌전등//부엌전등//부엌전등//부엌전등//부엌전등//부엌전등//부엌전등//부엌전등//부엌전등//부엌전등
+	totalnewnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+	totalnewnode->totalelecUse = totalKitchenLight;
+	strcpy(totalnewnode->inroom, "부엌");
+	strcpy(totalnewnode->usethings, "전등");
+	totalcurrent = totallist;
+	totalfollow = totallist;
+	while (totalcurrent != NULL)
+	{
+		if (totalcurrent->totalelecUse <= totalnewnode->totalelecUse)
+		{
+			break;
+		}
+		else
+		{
+			totalfollow = totalcurrent;
+			totalcurrent = totalcurrent->next;
+		}
+
+
+	}
+	totalnewnode->next = totalcurrent;
+	if (totallist == totalcurrent)		//아무것도 없을 경우 첫번째 칸에 넣기
+	{
+		totallist = totalnewnode;
+	}
+
+	else
+	{
+		totalfollow->next = totalnewnode;
+	}
+
+	//거실전등//거실전등//거실전등//거실전등//거실전등//거실전등//거실전등//거실전등//거실전등//거실전등//거실전등//거실전등//거실전등//거실전등
+	totalnewnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+	totalnewnode->totalelecUse = totalLivingLight;
+	strcpy(totalnewnode->inroom, "거실");
+	strcpy(totalnewnode->usethings, "전등");
+	totalcurrent = totallist;
+	totalfollow = totallist;
+	while (totalcurrent != NULL)
+	{
+		if (totalcurrent->totalelecUse <= totalnewnode->totalelecUse)
+		{
+			break;
+		}
+		else
+		{
+			totalfollow = totalcurrent;
+			totalcurrent = totalcurrent->next;
+		}
+
+
+	}
+	totalnewnode->next = totalcurrent;
+	if (totallist == totalcurrent)		//아무것도 없을 경우 첫번째 칸에 넣기
+	{
+		totallist = totalnewnode;
+	}
+
+	else
+	{
+		totalfollow->next = totalnewnode;
+	}
+
+
+	totalchecker = totallist;
+	printf("이번 달에 가장 높은 것은 %s 에서 %s제품을 %.1f원 사용하셨습니다.\n\n\n", totalchecker->inroom, totalchecker->usethings, totalchecker->totalelecUse);
+
+	printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
+	printf("l          <1위> : %s %s          \n",totalchecker->inroom,totalchecker->usethings);
+	printf("l            			          \n");
+	printf("l          <2위> : %s %s          \n",totalchecker->next->inroom,totalchecker->next->usethings);
+	printf("l            			          \n");
+	printf("l          <3위> : %s %s          \n",totalchecker->next->next->inroom,totalchecker->next->next->usethings);
+	printf("l            			          \n");
+	printf("l          <4위> : %s %s          \n",totalchecker->next->next->next->inroom,totalchecker->next->next->next->usethings);
+	printf("l            			          \n");
+	printf("l          <5위> : %s %s          \n",totalchecker->next->next->next->next->inroom,totalchecker->next->next->next->next->usethings);
+	printf("l            				      \n");
+	printf("l          <6위> : %s %s          \n",totalchecker->next->next->next->next->next->inroom,totalchecker->next->next->next->next->next->usethings);
+	printf("l            			          \n");
+	printf("l          <7위> : %s %s          \n",totalchecker->next->next->next->next->next->next->inroom,totalchecker->next->next->next->next->next->next->usethings);
+	printf("l            			         \n");
+	printf("l          <8위> : %s %s          \n",totalchecker->next->next->next->next->next->next->next->inroom,totalchecker->next->next->next->next->next->next->next->usethings);
+	printf("l            			          \n");
+	printf("l          <9위> : %s %s          \n",totalchecker->next->next->next->next->next->next->next->next->inroom,totalchecker->next->next->next->next->next->next->next->next->usethings);
+	printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
+	
+
+	printf("\n\n%.1f", totalm);	
 	fclose(fp);
 	return list;
 }
