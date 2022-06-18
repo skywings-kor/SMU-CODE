@@ -94,7 +94,7 @@ TotalElecUseNODE* TotalElec(TotalElecUseNODE* list,char takeroom[10]);
 TotalElecUseNODE* TotalElecList(TotalElecUseNODE* eleclist, TotalElecUseNODE* list, char hosu[36][10], char takeroom[10]);
 
 //사용자 패턴 분석 및 서비스 추천 기능
-ServiceNODE* UserService(ServiceNODE* list, char takeroom[10]);
+ServiceNODE* UserService(ServiceNODE* list, char magetakeroom[10]);
 ServiceNODE* timeService(ServiceNODE* inList,ServiceNODE* list, char takeroom[10]);
 
 int main()
@@ -330,7 +330,8 @@ int main()
 		else if (cuschoice == 3)
 		{
 			serList = UserService(serList, takeroom);
-			timeService(timeList,serList, takeroom);
+			timeList=timeService(timeList,serList, takeroom);
+			system("pause");
 		}
 
 		else if (cuschoice == 4)
@@ -3553,7 +3554,7 @@ TotalElecUseNODE* TotalElecList(TotalElecUseNODE* eleclist, TotalElecUseNODE* li
 
 
 //사용자 패턴 분석 및 서비스 추천 기능
-ServiceNODE* UserService(ServiceNODE* list, char takeroom[10])
+ServiceNODE* UserService(ServiceNODE* list, char magetakeroom[10])
 {
 	ServiceNODE* walker = NULL, * newnode = NULL, * current = NULL, * follow = NULL;
 	
@@ -3604,7 +3605,7 @@ ServiceNODE* UserService(ServiceNODE* list, char takeroom[10])
 		temp = strtok(NULL, " :~");
 		strcpy(takeroomnum, temp);
 
-		if (strcmp(takeroomnum, takeroom) == 0)
+		if (strcmp(takeroomnum, magetakeroom) == 0)
 		{
 			temp = strtok(NULL, " :~");
 			strcpy(takeroom, temp);
@@ -3738,25 +3739,146 @@ ServiceNODE* UserService(ServiceNODE* list, char takeroom[10])
 
 	}
 	
+
+	return list;
 }
 
 ServiceNODE* timeService(ServiceNODE* inList, ServiceNODE* list, char takeroom[10])
 {
 	ServiceNODE* newwalker=NULL,* walker = NULL, * newnode = NULL, * current = NULL, * follow = NULL;
-	int Timesum=0;
+	int tvTimesum=0;
+	int inducTimesum=0;
+	int washerTimesum=0;
+	int refreTimesum=0;
+
 	int Timeavr = 0;
+
+	int tvcount = 0;
+	int washercount = 0;
+	int refrecount = 0;
+	int inductioncount = 0;
+	
 	walker = list;
 	
 	while (walker != NULL)
 	{
-		if(strcmp(newnode->usethings, "TV") == 0)
+		if (strcmp(walker->usethings, "TV") == 0)
+		{
+			tvcount = 1 + tvcount;
+			tvTimesum = walker->startTime + tvTimesum;
+		}
 
-		Timesum = walker->startTime + Timesum;
+		else if (strcmp(walker->usethings, "인덕션") == 0)
+		{
+			inductioncount = inductioncount + 1;
+			inducTimesum = walker->startTime + inducTimesum;
+		}
+
+		else if (strcmp(walker->usethings, "세탁기") == 0)
+		{
+			washercount = washercount + 1;
+			washerTimesum = walker->startTime + washerTimesum;
+		}
+
+		else if (strcmp(walker->usethings, "냉장고") == 0)
+		{
+			refrecount = refrecount + 1;
+			refreTimesum = walker->startTime + refreTimesum;
+		}
+
+		else
+		{
+
+		}
+
+		
 		walker = walker->next;
 	}
+	
 
-	Timeavr = Timesum / 30;
+	//정리된 연결리스트에 넣는 부분
+	walker = inList;
+	follow = inList;
+	current = inList;
+
+	Timeavr = tvTimesum / tvcount;
+	newnode = (ServiceNODE*)malloc(sizeof(ServiceNODE));
+	newnode->startTime = Timeavr;
+	
+	strcpy(newnode->usethings, "TV");
+	newnode->next = current;
+	inList = newnode;
+	
+	//정리된 연결리스트에 넣는 부분
+	
+	follow = inList;
+	current = inList;
+	while (current != NULL)
+	{
+		follow = current;
+		current = current->next;
+	}
+
+	Timeavr = inducTimesum / inductioncount;
+	newnode = (ServiceNODE*)malloc(sizeof(ServiceNODE));
+	newnode->startTime = Timeavr;
+	strcpy(newnode->usethings, "인덕션");
+	
+	newnode->next = current;
+	follow->next = newnode;
+
+	
+	
+	
+	//정리된 연결리스트에 넣는 부분
+	follow = inList;
+	current = inList;
+	while (current != NULL)
+	{
+		follow = current;
+		current = current->next;
+	}
+
+	Timeavr = washerTimesum / washercount;
+	newnode = (ServiceNODE*)malloc(sizeof(ServiceNODE));
+	newnode->startTime = Timeavr;
+	strcpy(newnode->usethings, "세탁기");
+
+	newnode->next = current;
+	follow->next = newnode;
+
+	//정리된 연결리스트에 넣는 부분
+	follow = inList;
+	current = inList;
+	while (current != NULL)
+	{
+		follow = current;
+		current = current->next;
+	}
+
+	Timeavr = refreTimesum / refrecount;
+	newnode = (ServiceNODE*)malloc(sizeof(ServiceNODE));
+	newnode->startTime = Timeavr;
+	strcpy(newnode->usethings, "냉장고");
+
+	newnode->next = current;
+	follow->next = newnode;
+
+
+	walker = inList;
+
+
+	////잘 들어갔는지 테스트용
+	//while (walker != NULL)
+	//{
+	//	printf("\n\n%s  %d\n\n", walker->usethings, walker->startTime);
+	//	walker = walker->next;
+	//}
 
 
 
+
+
+
+	return inList;
 }
