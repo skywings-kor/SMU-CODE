@@ -363,13 +363,15 @@ int main()
 		else if (cuschoice == 4)
 		{
 			powerList = Userpoweroff(powerList,takeroom, changeliving);
-			poweroffFList = Userpoweroff(poweroffFList,powerList,takeroom, changeliving);
+			poweroffFList = UserpoweroffList(poweroffFList,powerList,takeroom, changeliving);
 			system("pause");
 		}
 
 		else if (cuschoice == 0)
 		{
-
+			printf("시스템을 종료합니다...");
+			exit(0);
+			system("pause");
 		}
 	}
 	
@@ -4105,7 +4107,7 @@ PoweroffNODE* Userpoweroff(PoweroffNODE* list, char logintakeroom[20], int livin
 			newnode->startTime = starttime;
 			newnode->endTime = endtime;
 			newnode->difTime = total;
-
+			
 			while (current != NULL)
 			{
 
@@ -4147,15 +4149,14 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 	PoweroffNODE* walker = NULL, * newnode = NULL, * current = NULL, * follow = NULL, * incurrent = NULL, * infollow = NULL;
 	PoweroffNODE* tvlist = NULL, * washerlist = NULL, * inductionlist = NULL, * refrelist = NULL, * r1list = NULL, * r2list = NULL, * r3list = NULL, * livinglist = NULL, * kitchenlist = NULL;
 
-	
+	current = list;
+	follow = list;
 	while (current != NULL)
 	{
-		current = list;
-		follow = list;
-		
 		newnode = (PoweroffNODE*)malloc(sizeof(PoweroffNODE));
 		if (strcmp(current->usethings, "TV") == 0)
 		{
+			
 			incurrent = tvlist;
 			infollow = tvlist;
 			strcpy(newnode->inroom, current->inroom);
@@ -4180,7 +4181,7 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			}
 			else
 			{
-				follow->next = newnode;
+				infollow->next = newnode;
 			}
 
 
@@ -4189,8 +4190,8 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 
 		else if (strcmp(current->usethings, "세탁기") == 0)
 		{
-			incurrent = tvlist;
-			infollow = tvlist;
+			incurrent = washerlist;
+			infollow = washerlist;
 			strcpy(newnode->inroom, current->inroom);
 			strcpy(newnode->roomnumber, current->roomnumber);
 			strcpy(newnode->usethings, current->usethings);
@@ -4207,20 +4208,20 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			}
 			newnode->next = incurrent;
 
-			if (incurrent == tvlist)
+			if (incurrent == washerlist)
 			{
-				tvlist = newnode;
+				washerlist = newnode;
 			}
 			else
 			{
-				follow->next = newnode;
+				infollow->next = newnode;
 			}
 		}
 
 		else if (strcmp(current->usethings, "냉장고") == 0)
 		{
-			incurrent = tvlist;
-			infollow = tvlist;
+			incurrent = refrelist;
+			infollow = refrelist;
 			strcpy(newnode->inroom, current->inroom);
 			strcpy(newnode->roomnumber, current->roomnumber);
 			strcpy(newnode->usethings, current->usethings);
@@ -4228,7 +4229,7 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			newnode->useday = current->useday;
 			newnode->startTime = current->startTime;
 			newnode->endTime = current->endTime;
-
+			
 			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
 			while (incurrent != NULL)
 			{
@@ -4237,20 +4238,20 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			}
 			newnode->next = incurrent;
 
-			if (incurrent == tvlist)
+			if (incurrent == refrelist)
 			{
-				tvlist = newnode;
+				refrelist = newnode;
 			}
 			else
 			{
-				follow->next = newnode;
+				infollow->next = newnode;
 			}
 		}
 
 		else if (strcmp(current->usethings, "인덕션") == 0)
 		{
-			incurrent = tvlist;
-			infollow = tvlist;
+			incurrent = inductionlist;
+			infollow = inductionlist;
 			strcpy(newnode->inroom, current->inroom);
 			strcpy(newnode->roomnumber, current->roomnumber);
 			strcpy(newnode->usethings, current->usethings);
@@ -4258,7 +4259,7 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			newnode->useday = current->useday;
 			newnode->startTime = current->startTime;
 			newnode->endTime = current->endTime;
-
+			
 			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
 			while (incurrent != NULL)
 			{
@@ -4267,13 +4268,13 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			}
 			newnode->next = incurrent;
 
-			if (incurrent == tvlist)
+			if (incurrent == inductionlist)
 			{
-				tvlist = newnode;
+				inductionlist = newnode;
 			}
 			else
 			{
-				follow->next = newnode;
+				infollow->next = newnode;
 			}
 		}
 
@@ -4281,8 +4282,8 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 
 		else if ((strcmp(current->usethings, "전등") == 0) && (strcmp(current->inroom, "Room1") == 0))
 		{
-			incurrent = tvlist;
-			infollow = tvlist;
+			incurrent = r1list;
+			infollow = r1list;
 			strcpy(newnode->inroom, current->inroom);
 			strcpy(newnode->roomnumber, current->roomnumber);
 			strcpy(newnode->usethings, current->usethings);
@@ -4299,20 +4300,20 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			}
 			newnode->next = incurrent;
 
-			if (incurrent == tvlist)
+			if (incurrent == r1list)
 			{
-				tvlist = newnode;
+				r1list = newnode;
 			}
 			else
 			{
-				follow->next = newnode;
+				infollow->next = newnode;
 			}
 		}
 
 		else if ((strcmp(current->usethings, "전등") == 0) && (strcmp(current->inroom, "Room2") == 0))
 		{
-			incurrent = tvlist;
-			infollow = tvlist;
+			incurrent = r2list;
+			infollow = r2list;
 			strcpy(newnode->inroom, current->inroom);
 			strcpy(newnode->roomnumber, current->roomnumber);
 			strcpy(newnode->usethings, current->usethings);
@@ -4329,20 +4330,20 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			}
 			newnode->next = incurrent;
 
-			if (incurrent == tvlist)
+			if (incurrent == r2list)
 			{
-				tvlist = newnode;
+				r2list = newnode;
 			}
 			else
 			{
-				follow->next = newnode;
+				infollow->next = newnode;
 			}
 		}
 
 		else if ((strcmp(current->usethings, "전등") == 0) && (strcmp(current->inroom, "Room3") == 0))
 		{
-			incurrent = tvlist;
-			infollow = tvlist;
+			incurrent = r3list;
+			infollow = r3list;
 			strcpy(newnode->inroom, current->inroom);
 			strcpy(newnode->roomnumber, current->roomnumber);
 			strcpy(newnode->usethings, current->usethings);
@@ -4359,20 +4360,20 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			}
 			newnode->next = incurrent;
 
-			if (incurrent == tvlist)
+			if (incurrent == r3list)
 			{
-				tvlist = newnode;
+				r3list = newnode;
 			}
 			else
 			{
-				follow->next = newnode;
+				infollow->next = newnode;
 			}
 		}
 
 		else if ((strcmp(current->usethings, "전등") == 0) && (strcmp(current->inroom, "Kitchen") == 0))
 		{
-			incurrent = tvlist;
-			infollow = tvlist;
+			incurrent = kitchenlist;
+			infollow = kitchenlist;
 			strcpy(newnode->inroom, current->inroom);
 			strcpy(newnode->roomnumber, current->roomnumber);
 			strcpy(newnode->usethings, current->usethings);
@@ -4389,20 +4390,20 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			}
 			newnode->next = incurrent;
 
-			if (incurrent == tvlist)
+			if (incurrent == kitchenlist)
 			{
-				tvlist = newnode;
+				kitchenlist = newnode;
 			}
 			else
 			{
-				follow->next = newnode;
+				infollow->next = newnode;
 			}
 		}
 
 		else if ((strcmp(current->usethings, "전등") == 0) && (strcmp(current->inroom, "Livingroom전등") == 0))
 		{
-			incurrent = tvlist;
-			infollow = tvlist;
+			incurrent = livinglist;
+			infollow = livinglist;
 			strcpy(newnode->inroom, current->inroom);
 			strcpy(newnode->roomnumber, current->roomnumber);
 			strcpy(newnode->usethings, current->usethings);
@@ -4419,13 +4420,13 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			}
 			newnode->next = incurrent;
 
-			if (incurrent == tvlist)
+			if (incurrent == livinglist)
 			{
-				tvlist = newnode;
+				livinglist = newnode;
 			}
 			else
 			{
-				follow->next = newnode;
+				infollow->next = newnode;
 			}
 		}
 
@@ -4451,11 +4452,11 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 	int r3count[18][2] = {0, };
 	int livcount[18][2] = {0, };
 	int kitcount[18][2] = {0, };
-	
-	
+	int totalcount[18][2] = { 0, };
 	//TV
 	while (tvwalker != NULL)
 	{
+		
 		for (int i = 0; i < 18; i++)
 		{
 			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
@@ -4479,6 +4480,7 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 	//인덕션
 	while (inductionwalker != NULL)
 	{
+		
 		for (int i = 0; i < 18; i++)
 		{
 			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
@@ -4617,6 +4619,7 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 	//거실
 	while (livwalker != NULL)
 	{
+		
 		for (int i = 0; i < 18; i++)
 		{
 			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
@@ -4642,6 +4645,7 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 	{
 		for (int i = 0; i < 18; i++)
 		{
+			
 			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
 			if ((21600 + (3600 * i) <= kitwalker->startTime) && (kitwalker->startTime <= 25200 + (3600 * i)))
 			{
@@ -4660,6 +4664,138 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 		kitwalker = kitwalker->next;
 	}
 
+	for (int j = 0; j < 18; j++)
+	{
+		totalcount[j][0] = tvcount[j][0] + inductioncount[j][0] + refrecount[j][0] + washercount[j][0] + r1count[j][0] + r2count[j][0] + r3count[j][0] + livcount[j][0] + kitcount[j][0];
+		
+		//검사하기 위한 중복문
+		
+		
+	}
+
+	int max = 0;
+	int timetable = 0;
+	int index = 0;
+	for (int f = 0; f < 18; f++)
+	{
+		if (max <= totalcount[f][0])
+		{
+			max = totalcount[f][0];
+			timetable = f;
+		}
+	}
+
+	for (int s = 0; s < 9; s++)
+	{
+		if (totalcount[timetable][1] < tvcount[timetable][1])
+		{
+			totalcount[timetable][1] = tvcount[timetable][1];
+			index = 1;
+		}
+
+		else if (totalcount[timetable][1] < inductioncount[timetable][1])
+		{
+			totalcount[timetable][1] = inductioncount[timetable][1];
+			index = 2;
+		}
+
+		else if (totalcount[timetable][1] < refrecount[timetable][1])
+		{
+			totalcount[timetable][1] = refrecount[timetable][1];
+			index = 3;
+		}
+
+		else if (totalcount[timetable][1] < washercount[timetable][1])
+		{
+			totalcount[timetable][1] = washercount[timetable][1];
+			index = 4;
+		}
+
+		else if (totalcount[timetable][1] < r1count[timetable][1])
+		{
+			totalcount[timetable][1] = r1count[timetable][1];
+			index = 5;
+		}
+
+		else if (totalcount[timetable][1] < r2count[timetable][1])
+		{
+			totalcount[timetable][1] = r2count[timetable][1];
+			index = 6;
+		}
+
+		else if (totalcount[timetable][1] < r3count[timetable][1])
+		{
+			totalcount[timetable][1] = r3count[timetable][1];
+			index = 7;
+		}
+
+		else if (totalcount[timetable][1] < livcount[timetable][1])
+		{
+			totalcount[timetable][1] = livcount[timetable][1];
+			index = 8;
+		}
+
+		else if (totalcount[timetable][1] < kitcount[timetable][1])
+		{
+			totalcount[timetable][1] = kitcount[timetable][1];
+			index = 9;
+		}
+
+		else
+		{
+			
+		}
+	}
+
+	printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n");
+
+	printf("  고객님의 집에서 가장 낭비가 심한 시간대가 %d시 시간대이며 %d개의 제품이 사용되고 있습니다.\n\n",timetable+6,max);
+
+	if (index == 1)
+	{
+		printf("  tv가 전력 낭비가 심합니다!! 해당 기기 사용을 자제할 것을 권장드립니다.\n\n");
+	}
+
+	else if (index == 2)
+	{
+		printf("  인덕션이 전력 낭비가 심합니다!! 해당 기기 사용을 자제할 것을 권장드립니다.\n\n");
+	}
+
+	else if (index == 3)
+	{
+		printf("  냉장고가 전력 낭비가 심합니다!! 해당 기기 문을 열고 닫는 것을 자제할 것을 권장드립니다.\n\n");
+	}
+
+	else if (index == 4)
+	{
+		printf("  세탁기가 전력 낭비가 심합니다!! 해당 기기 사용을 자제할 것을 권장드립니다.\n\n");
+	}
+
+	else if (index == 5)
+	{
+		printf("  방1 전등이 전력 낭비가 심합니다!! 해당 기기 불을 끄는 것을 권장드립니다.\n\n");
+	}
+
+	else if (index == 6)
+	{
+		printf("  방2 전등이 전력 낭비가 심합니다!! 해당 기기 불을 끄는 것을 권장드립니다.\n\n");
+	}
+
+	else if (index == 7)
+	{
+		printf("  방3 전등이 전력 낭비가 심합니다!! 해당 기기 불을 끄는 것을 권장드립니다.\n\n");
+	}
+
+	else if (index == 8)
+	{
+		printf("  거실 전등이 전력 낭비가 심합니다!! 해당 기기 불을 끄는 것을 권장드립니다.\n\n");
+	}
+
+	else if (index == 9)
+	{
+		printf("  주방 전등이 전력 낭비가 심합니다!! 해당 기기 불을 끄는 것을 권장드립니다.\n\n");
+	}
+	printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n");
 
 
 	return inlist;
