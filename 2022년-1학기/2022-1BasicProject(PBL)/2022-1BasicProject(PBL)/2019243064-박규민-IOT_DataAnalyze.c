@@ -28,7 +28,7 @@ typedef struct TotalElecUseNODE
 
 }TotalElecUseNODE;
 
-
+//사용 전력량
 typedef struct TopUsageNODE
 {
 	char roomnumber[10];
@@ -40,6 +40,20 @@ typedef struct TopUsageNODE
 	double payMoney;
 	struct TopUsageNODE* next;
 }TopUsageNODE;
+
+//사용자 패턴 분석
+typedef struct ServiceNODE
+{
+	char roomnumber[10];
+	char inroom[10];
+	char usethings[20];
+	int useday;
+	int difTime;
+	double totalelecUse;
+	double payMoney;
+	int startTime;
+	struct ServiceNODE* next;
+}ServiceNODE;
 
 
 
@@ -76,8 +90,12 @@ int TVDataCreate(char apartroom[6]);
 TopUsageNODE* TopUsage(TopUsageNODE* list,char loginid[10]);
 
 //총사용 전력 안내 및 타세대 평균 비교
-TotalElecUseNODE* TotalElec(TotalElecUseNODE* list,char loginid[10]);
+TotalElecUseNODE* TotalElec(TotalElecUseNODE* list,char takeroom[10]);
+TotalElecUseNODE* TotalElecList(TotalElecUseNODE* eleclist, TotalElecUseNODE* list, char hosu[36][10], char takeroom[10]);
 
+//사용자 패턴 분석 및 서비스 추천 기능
+ServiceNODE* UserService(ServiceNODE* list, char takeroom[10]);
+ServiceNODE* timeService(ServiceNODE* inList,ServiceNODE* list, char takeroom[10]);
 
 int main()
 {
@@ -279,6 +297,9 @@ int main()
 	{
 		//노드 변수 초기화
 		TopUsageNODE* list = NULL;
+		TotalElecUseNODE* totalList = NULL, *totalFList=NULL;
+		ServiceNODE* serList = NULL, * timeList = NULL;
+
 		system("cls");		//한 번 싹 지우고 깔끔하게 시작
 		printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 고객님 안녕하세요 스마트홈 관리 시스템입니다.ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n");
 		printf("                                     원하시는 기능을 입력해주세요\n\n");
@@ -300,17 +321,21 @@ int main()
 
 		else if (cuschoice == 2)
 		{
+			totalList = TotalElec(totalList, takeroom);
+			totalFList = TotalElecList(totalFList, totalList, ApartRoom,takeroom);
 
+			system("pause");
 		}
 
 		else if (cuschoice == 3)
 		{
-
+			serList = UserService(serList, takeroom);
+			timeService(timeList,serList, takeroom);
 		}
 
 		else if (cuschoice == 4)
 		{
-
+			
 		}
 
 		else if (cuschoice == 0)
@@ -3246,11 +3271,14 @@ TopUsageNODE* TopUsage(TopUsageNODE* list, char loginid[10])
 	printf("l          <9위> : %s %s          \n",totalchecker->next->next->next->next->next->next->next->next->inroom,totalchecker->next->next->next->next->next->next->next->next->usethings);
 	printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n");
 	
-
-	printf("\n\n%.1f", totalm);	
+	//총전력 보기위한 테스트용
+	//printf("\n\n%.1f", totalm);	
 	fclose(fp);
 	return list;
 }
+
+
+//총 사용 전력 비교함수//총 사용 전력 비교함수//총 사용 전력 비교함수//총 사용 전력 비교함수//총 사용 전력 비교함수//총 사용 전력 비교함수//총 사용 전력 비교함수
 
 TotalElecUseNODE* TotalElec(TotalElecUseNODE* list, char loginid[10])
 {
@@ -3304,7 +3332,279 @@ TotalElecUseNODE* TotalElec(TotalElecUseNODE* list, char loginid[10])
 		temp = strtok(NULL, " :~");
 		strcpy(takeroomnum, temp);
 
-		if (strcmp(takeroomnum, loginid) == 0)
+		temp = strtok(NULL, " :~");
+		strcpy(takeroom, temp);
+
+		temp = strtok(NULL, " :~");
+		strcpy(things, temp);
+
+		temp = strtok(NULL, " :~");
+		temp = strtok(NULL, " :~");
+		strcpy(day, temp);
+
+		temp = strtok(NULL, " :~\n");
+
+		temp = strtok(NULL, " :~\n");
+		strcpy(starthour, temp);
+
+		temp = strtok(NULL, " :~\n");
+		strcpy(startmin, temp);
+
+		temp = strtok(NULL, " :~\n");
+		strcpy(startsec, temp);
+
+
+		temp = strtok(NULL, " :~\n");
+		strcpy(endhour, temp);
+
+		temp = strtok(NULL, " :~\n");
+		strcpy(endmin, temp);
+
+		temp = strtok(NULL, " :~\n");
+		strcpy(endsec, temp);
+
+		changeday = atoi(day);
+
+		sth = atoi(starthour);
+		edh = atoi(endhour);
+		stm = atoi(startmin);
+		edm = atoi(endmin);
+		sts = atoi(startsec);
+		eds = atoi(endsec);
+
+		//시간 계산
+		starttime = (sth * 60 * 60) + (stm * 60) + (sts);
+		endtime = (edh * 60 * 60) + (edm * 60) + (eds);
+
+		total = endtime - starttime;
+
+
+		newnode = (TotalElecUseNODE*)malloc(sizeof(TotalElecUseNODE));
+
+		strcpy(newnode->roomnumber, takeroomnum);
+		strcpy(newnode->inroom, takeroom);
+
+		strcpy(newnode->usethings, things);
+		newnode->useday = changeday;
+		newnode->difTime = total;
+
+		//가격 조정하는 코드 PART//가격 조정하는 코드 PART//가격 조정하는 코드 PART//가격 조정하는 코드 PART//가격 조정하는 코드 PART
+		//1kw(1000w) 당 85원 
+		if (strcmp(newnode->usethings, "TV") == 0)
+		{
+			newnode->totalelecUse = total * 0.05;		//평균 TV 사용량 소비전력 57W
+
+			moneytemp = (total * 0.05) / 1000;
+			newnode->payMoney = moneytemp * 85;
+		}
+
+		else if (strcmp(newnode->usethings, "세탁기") == 0)
+		{
+			newnode->totalelecUse = total * 0.09;		//평균 드럼 세탁기 사용량 소비전력 2200W
+			moneytemp = (total * 0.09) / 1000;
+			newnode->payMoney = moneytemp * 85;
+		}
+
+		else if (strcmp(newnode->usethings, "냉장고") == 0)
+		{
+			newnode->totalelecUse = total * 0.07;		//열고 닫으면 원래 온도로 돌아가기 위한 전력 소비 측정
+			moneytemp = (total * 0.07) / 1000;
+			newnode->payMoney = moneytemp * 85;
+		}
+
+		else if (strcmp(newnode->usethings, "전등") == 0)
+		{
+			newnode->totalelecUse = total * 0.003;		//스마트 전등 평균 소비전력 시간당 40W
+			moneytemp = (total * 0.003) / 1000;
+			newnode->payMoney = moneytemp * 85;
+		}
+
+		else if (strcmp(newnode->usethings, "인덕션") == 0)
+		{
+			newnode->totalelecUse = total * 0.15;		//스마트 전등 평균 소비전력 시간당 40W
+			moneytemp = (total * 0.15) / 1000;
+			newnode->payMoney = moneytemp * 85;
+		}
+
+		else
+		{
+
+		}
+
+
+		while (current != NULL)
+		{
+
+			if (current->totalelecUse <= newnode->totalelecUse)
+			{
+				break;
+			}
+			follow = current;
+			current = current->next;
+		}
+		newnode->next = current;
+		if (current == list)		//아무것도 없을 경우 첫번째 칸에 넣기
+		{
+			list = newnode;
+		}
+
+		else
+		{
+			follow->next = newnode;
+		}
+
+
+	}
+
+	return list;
+}
+
+//종합한거 정리하여 표츌하는 함수
+TotalElecUseNODE* TotalElecList(TotalElecUseNODE* eleclist, TotalElecUseNODE* list, char hosu[36][10], char takeroom[10])
+{
+	TotalElecUseNODE* walker = NULL, *newnode=NULL, *current=NULL, *follow=NULL;
+	walker = list;
+
+	double hosuElec = 0;
+	for (int i = 0; i <= 35; i++)		//호수 전체 반복
+	{
+		hosuElec = 0;
+		walker = list;
+		while (walker != NULL)
+		{
+			if (strcmp(walker->roomnumber, hosu[i]) == 0)
+			{
+				hosuElec = walker->totalelecUse + hosuElec;
+			}
+
+			walker = walker->next;
+		}
+
+		newnode = (TotalElecUseNODE*)malloc(sizeof(TotalElecUseNODE));
+		newnode->totalelecUse = hosuElec;
+		strcpy(newnode->roomnumber, hosu[i]);
+
+		follow = eleclist;
+		current = eleclist;
+		while (current != NULL)
+		{
+			follow = current;
+			current = current->next;
+		}
+		newnode->next = current;
+		
+		if (current == eleclist)		//아무것도 없을 경우 첫번째 칸에 넣기
+		{
+			eleclist = newnode;
+		}
+
+		else
+		{
+			follow->next = newnode;
+		}
+	}
+	double client = 0;
+	walker = eleclist;
+	while (walker != NULL)
+	{
+		if (strcmp(takeroom, walker->roomnumber) == 0)
+		{
+			client = walker->totalelecUse / 30;
+			break;
+			
+		}
+		
+		walker = walker->next;
+	}
+	
+	double finalElec=0;
+	walker = eleclist;
+	while (walker != NULL)
+	{
+		finalElec = walker->totalelecUse + finalElec;
+		walker = walker->next;
+	}
+
+	//출력부분
+	printf("\n\nㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+	if (client < finalElec / 36 / 30)
+	{
+		printf("\n\n=> 고객님은 타 세대보다 전력을 적게 사용하십니다");
+	}
+	
+	else if (client > finalElec / 36 / 30)
+	{
+		printf("\n\n=> 고객님은 타 세대보다 전력을 많이 사용하십니다");
+	}
+
+	else if (client == finalElec / 36 / 30)
+	{
+		printf("\n\n=> 고객님은 타 세대와 똑같이 전력을 사용하십니다");
+	}
+	
+	printf("\n\n현재 고객님의 하루 평균 전력 사용량은 < %.1fW > 입니다", client);
+	printf("\n\n타 세대의 하루 평균 전력 사용량은 < %.1fW > 입니다",finalElec/36/30);
+
+	
+	
+	printf("\n\n\nㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n");
+	return eleclist;
+}
+
+
+//사용자 패턴 분석 및 서비스 추천 기능
+ServiceNODE* UserService(ServiceNODE* list, char takeroom[10])
+{
+	ServiceNODE* walker = NULL, * newnode = NULL, * current = NULL, * follow = NULL;
+	
+	FILE* fp;
+	fp = fopen("IOTdata.txt", "r");
+	int i = 0;
+	char str[70];
+	char takeroomnum[10];	//호수
+	char takeroom[20];		//방
+	char things[20];		//사용한 제품
+	char day[5];			//사용한 날짜
+
+	char starthour[10];
+	char endhour[10];
+
+	char startmin[10];
+	char endmin[10];
+
+	char startsec[10];
+	char endsec[10];
+
+	int sth = 0;
+	int edh = 0;
+
+	int stm = 0;
+	int edm = 0;
+
+	int sts = 0;
+	int eds = 0;
+
+	int starttime = 0;
+	int endtime = 0;
+	int total = 0;
+
+	int changeday = 0;
+	double moneytemp = 0;
+	char* temp;
+
+
+	while (!feof(fp))
+	{
+		current = list;
+		follow = list;
+
+
+		fgets(str, sizeof(str), fp);		//호수 문자 담아두는거
+		temp = strtok(str, " :~");
+		temp = strtok(NULL, " :~");
+		strcpy(takeroomnum, temp);
+
+		if (strcmp(takeroomnum, takeroom) == 0)
 		{
 			temp = strtok(NULL, " :~");
 			strcpy(takeroom, temp);
@@ -3353,7 +3653,7 @@ TotalElecUseNODE* TotalElec(TotalElecUseNODE* list, char loginid[10])
 			total = endtime - starttime;
 
 
-			newnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+			newnode = (ServiceNODE*)malloc(sizeof(ServiceNODE));
 
 			strcpy(newnode->roomnumber, takeroomnum);
 			strcpy(newnode->inroom, takeroom);
@@ -3361,6 +3661,7 @@ TotalElecUseNODE* TotalElec(TotalElecUseNODE* list, char loginid[10])
 			strcpy(newnode->usethings, things);
 			newnode->useday = changeday;
 			newnode->difTime = total;
+			newnode->startTime = starttime;		//사용 시작 시간 저장
 
 			//가격 조정하는 코드 PART//가격 조정하는 코드 PART//가격 조정하는 코드 PART//가격 조정하는 코드 PART//가격 조정하는 코드 PART
 			//1kw(1000w) 당 85원 
@@ -3436,4 +3737,26 @@ TotalElecUseNODE* TotalElec(TotalElecUseNODE* list, char loginid[10])
 		}
 
 	}
+	
+}
+
+ServiceNODE* timeService(ServiceNODE* inList, ServiceNODE* list, char takeroom[10])
+{
+	ServiceNODE* newwalker=NULL,* walker = NULL, * newnode = NULL, * current = NULL, * follow = NULL;
+	int Timesum=0;
+	int Timeavr = 0;
+	walker = list;
+	
+	while (walker != NULL)
+	{
+		if(strcmp(newnode->usethings, "TV") == 0)
+
+		Timesum = walker->startTime + Timesum;
+		walker = walker->next;
+	}
+
+	Timeavr = Timesum / 30;
+
+
+
 }
