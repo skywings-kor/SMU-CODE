@@ -56,6 +56,20 @@ typedef struct ServiceNODE
 }ServiceNODE;
 
 
+//전력 낭비 기기 파악
+typedef struct PoweroffNODE
+{
+	char roomnumber[10];
+	char inroom[10];
+	char usethings[20];
+	int useday;
+	int difTime;
+	int startTime;
+	int endTime;
+	struct PoweroffNODE* next;
+}PoweroffNODE;
+
+
 
 int ResetData();
 
@@ -96,6 +110,11 @@ TotalElecUseNODE* TotalElecList(TotalElecUseNODE* eleclist, TotalElecUseNODE* li
 //사용자 패턴 분석 및 서비스 추천 기능
 ServiceNODE* UserService(ServiceNODE* list, char magetakeroom[10]);
 ServiceNODE* timeService(ServiceNODE* inList,ServiceNODE* list, char takeroom[10]);
+
+//전력 낭비 기기 파악 기능
+PoweroffNODE* Userpoweroff(PoweroffNODE* list, char logintakeroom[20], int livinguser);
+PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist,PoweroffNODE* list, char logintakeroom[10], int livinguser);
+
 
 int main()
 {
@@ -269,7 +288,9 @@ int main()
 
 	char takestr[60];		//파일에서 문장 가져옴
 	char* temp;
-	char tempid[20];
+	char takeliving[10];
+	int changeliving=0;
+	char takeid[20];
 	char takeroom[10];		//가져온 문장에서 호수만 추출
 	
 	FILE* fp;
@@ -279,11 +300,15 @@ int main()
 		fgets(takestr, sizeof(takestr), fp);
 		temp= strtok(takestr, " ,");
 		strcpy(takeroom, temp);
+
 		temp = strtok(NULL, " ,");
-		strcpy(tempid, temp);
+		strcpy(takeliving, temp);
+		changeliving = atoi(takeliving);
 
+		temp = strtok(NULL, " ,");
+		strcpy(takeid, temp);
 
-		if (strcmp(tempid, userid) == 0)
+		if (strcmp(takeid, userid) == 0)
 		{
 			break;
 		}
@@ -299,6 +324,7 @@ int main()
 		TopUsageNODE* list = NULL;
 		TotalElecUseNODE* totalList = NULL, *totalFList=NULL;
 		ServiceNODE* serList = NULL, * timeList = NULL;
+		PoweroffNODE* powerList = NULL, *poweroffFList=NULL;
 
 		system("cls");		//한 번 싹 지우고 깔끔하게 시작
 		printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 고객님 안녕하세요 스마트홈 관리 시스템입니다.ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n");
@@ -336,7 +362,9 @@ int main()
 
 		else if (cuschoice == 4)
 		{
-			
+			powerList = Userpoweroff(powerList,takeroom, changeliving);
+			poweroffFList = Userpoweroff(poweroffFList,powerList,takeroom, changeliving);
+			system("pause");
 		}
 
 		else if (cuschoice == 0)
@@ -3875,10 +3903,764 @@ ServiceNODE* timeService(ServiceNODE* inList, ServiceNODE* list, char takeroom[1
 	//	walker = walker->next;
 	//}
 
+	int hourtemp=0;
+	int mintemp=0;
+	int sectemp=0;
+	int channel = 0;
+	channel = rand() % 110;
 
+	//첫번째
+	printf("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+	hourtemp = (walker->startTime )/60/60;
+	mintemp = (walker->startTime -(hourtemp*60*60)) / 60;
+	sectemp = (walker->startTime  - (hourtemp * 60 * 60)-(mintemp*60));
+	printf("       \n\nTV 시청은 주로 %d시 %d분 %d초에 시청을 시작하셨습니다.", hourtemp, mintemp, sectemp);
+	printf("\n\n이번 추천 TV 채널은 %d번 입니다", channel);
+	printf("\n\nㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+
+
+
+
+	//두번째
+	int cook = 0;
+	char cuscook[10];
+	cook = rand() % 4;
+	if (cook == 0)
+	{
+		strcpy(cuscook, "김치찌개");
+	}
+
+	else if (cook == 1)
+	{
+		strcpy(cuscook, "계란찜");
+	}
+
+	else if (cook == 2)
+	{
+		strcpy(cuscook, "장조림");
+	}
+	
+	else if (cook == 3)
+	{
+		strcpy(cuscook, "장조림");
+	}
+
+	printf("\n\nㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+	walker = walker->next;
+	hourtemp = (walker->startTime ) / 60 / 60;
+	mintemp = (walker->startTime  - (hourtemp * 60 * 60)) / 60;
+	sectemp = (walker->startTime  - (hourtemp * 60 * 60) - (mintemp * 60));
+	printf("       \n\n인덕션 사용은 주로 %d시 %d분 %d초에 사용을 시작하셨습니다.", hourtemp, mintemp, sectemp);
+	printf("\n\n이번 추천 요리는 %s 입니다", cuscook);
+	printf("\n\nㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+
+
+
+	//세번째
+	printf("\n\nㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+	walker = walker->next;
+	hourtemp = (walker->startTime) / 60 / 60;
+	mintemp = (walker->startTime - (hourtemp * 60 * 60)) / 60;
+	sectemp = (walker->startTime - (hourtemp * 60 * 60) - (mintemp * 60));
+
+	printf("       \n\n세탁기 사용은 주로 %d시 %d분 %d초에 사용을 시작하셨습니다.", hourtemp, mintemp, sectemp);
+
+	hourtemp = (walker->startTime - 1800) / 60 / 60;
+	mintemp = (walker->startTime - 1800 - (hourtemp * 60 * 60)) / 60;
+	sectemp = (walker->startTime - 1800 - (hourtemp * 60 * 60) - (mintemp * 60));
+
+	printf("     \n\n 빨래 잊으신 것이 없는지 확인 알람은 %d시 %d분 %d초에 보낼 예정입니다", hourtemp, mintemp, sectemp);
+	printf("\n\nㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+
+
+
+	//네번째
+	printf("\n\nㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+	walker = walker->next;
+	hourtemp = (walker->startTime ) / 60 / 60;
+	mintemp = (walker->startTime  - (hourtemp * 60 * 60)) / 60;
+	sectemp = (walker->startTime  - (hourtemp * 60 * 60) - (mintemp * 60));
+	printf("       \n\n냉장고 사용은 주로 %d시 %d분 %d초에 사용을 시작하셨습니다.", hourtemp, mintemp, sectemp);
+
+	printf("\n\nㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
 
 
 
 
 	return inList;
+}
+
+
+PoweroffNODE* Userpoweroff(PoweroffNODE* list, char logintakeroom[20], int livinguser)
+{
+	PoweroffNODE* walker = NULL, * newnode = NULL, * current = NULL, * follow = NULL;
+	FILE* fp;
+	fp = fopen("IOTdata.txt", "r");
+
+	int i = 0;
+	char str[70];
+	char takeroomnum[10];	//호수
+	char takeroom[20];		//방
+	char things[20];		//사용한 제품
+	char day[5];			//사용한 날짜
+
+	char starthour[10];
+	char endhour[10];
+
+	char startmin[10];
+	char endmin[10];
+
+	char startsec[10];
+	char endsec[10];
+
+	int sth = 0;
+	int edh = 0;
+
+	int stm = 0;
+	int edm = 0;
+
+	int sts = 0;
+	int eds = 0;
+
+	int starttime = 0;
+	int endtime = 0;
+	int total = 0;
+
+	int changeday = 0;
+	double moneytemp = 0;
+	char* temp;
+
+	while (!feof(fp))
+	{
+		
+		current = list;
+		follow = list;
+
+
+		fgets(str, sizeof(str), fp);		//호수 문자 담아두는거
+		temp = strtok(str, " :~");
+		temp = strtok(NULL, " :~");
+		strcpy(takeroomnum, temp);
+
+		
+		
+
+		if (strcmp(takeroomnum, logintakeroom) == 0)
+		{
+			
+			temp = strtok(NULL, " :~");
+			strcpy(takeroom, temp);
+
+			temp = strtok(NULL, " :~");
+			strcpy(things, temp);
+
+			temp = strtok(NULL, " :~");
+			temp = strtok(NULL, " :~");
+			strcpy(day, temp);
+
+			temp = strtok(NULL, " :~\n");
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(starthour, temp);
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(startmin, temp);
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(startsec, temp);
+
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(endhour, temp);
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(endmin, temp);
+
+			temp = strtok(NULL, " :~\n");
+			strcpy(endsec, temp);
+
+			changeday = atoi(day);
+
+			sth = atoi(starthour);
+			edh = atoi(endhour);
+			stm = atoi(startmin);
+			edm = atoi(endmin);
+			sts = atoi(startsec);
+			eds = atoi(endsec);
+
+			//시간 계산
+			starttime = (sth * 60 * 60) + (stm * 60) + (sts);
+			endtime = (edh * 60 * 60) + (edm * 60) + (eds);
+
+			total = endtime - starttime;
+
+
+			newnode = (TopUsageNODE*)malloc(sizeof(TopUsageNODE));
+
+			strcpy(newnode->roomnumber, takeroomnum);
+			strcpy(newnode->inroom, takeroom);
+
+			strcpy(newnode->usethings, things);
+			newnode->useday = changeday;
+			newnode->startTime = starttime;
+			newnode->endTime = endtime;
+			newnode->difTime = total;
+
+			while (current != NULL)
+			{
+
+				if (current->startTime <= newnode->startTime)
+				{
+					break;
+				}
+				follow = current;
+				current = current->next;
+			}
+			newnode->next = current;
+			if (current == list)		//아무것도 없을 경우 첫번째 칸에 넣기
+			{
+				list = newnode;
+			}
+
+			else
+			{
+				follow->next = newnode;
+			}
+
+
+		}
+
+		else
+		{
+
+		}
+
+	}
+
+
+
+	return list;
+}
+
+PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char logintakeroom[10], int livinguser)
+{
+	PoweroffNODE* walker = NULL, * newnode = NULL, * current = NULL, * follow = NULL, * incurrent = NULL, * infollow = NULL;
+	PoweroffNODE* tvlist = NULL, * washerlist = NULL, * inductionlist = NULL, * refrelist = NULL, * r1list = NULL, * r2list = NULL, * r3list = NULL, * livinglist = NULL, * kitchenlist = NULL;
+
+	
+	while (current != NULL)
+	{
+		current = list;
+		follow = list;
+		
+		newnode = (PoweroffNODE*)malloc(sizeof(PoweroffNODE));
+		if (strcmp(current->usethings, "TV") == 0)
+		{
+			incurrent = tvlist;
+			infollow = tvlist;
+			strcpy(newnode->inroom, current->inroom);
+			strcpy(newnode->roomnumber, current->roomnumber);
+			strcpy(newnode->usethings, current->usethings);
+			newnode->difTime = current->difTime;
+			newnode->useday = current->useday;
+			newnode->startTime = current->startTime;
+			newnode->endTime = current->endTime;
+
+			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
+			while (incurrent != NULL)
+			{
+				infollow = incurrent;
+				incurrent = incurrent->next;
+			}
+			newnode->next = incurrent;
+
+			if (incurrent == tvlist)
+			{
+				tvlist = newnode;
+			}
+			else
+			{
+				follow->next = newnode;
+			}
+
+
+
+		}
+
+		else if (strcmp(current->usethings, "세탁기") == 0)
+		{
+			incurrent = tvlist;
+			infollow = tvlist;
+			strcpy(newnode->inroom, current->inroom);
+			strcpy(newnode->roomnumber, current->roomnumber);
+			strcpy(newnode->usethings, current->usethings);
+			newnode->difTime = current->difTime;
+			newnode->useday = current->useday;
+			newnode->startTime = current->startTime;
+			newnode->endTime = current->endTime;
+
+			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
+			while (incurrent != NULL)
+			{
+				infollow = incurrent;
+				incurrent = incurrent->next;
+			}
+			newnode->next = incurrent;
+
+			if (incurrent == tvlist)
+			{
+				tvlist = newnode;
+			}
+			else
+			{
+				follow->next = newnode;
+			}
+		}
+
+		else if (strcmp(current->usethings, "냉장고") == 0)
+		{
+			incurrent = tvlist;
+			infollow = tvlist;
+			strcpy(newnode->inroom, current->inroom);
+			strcpy(newnode->roomnumber, current->roomnumber);
+			strcpy(newnode->usethings, current->usethings);
+			newnode->difTime = current->difTime;
+			newnode->useday = current->useday;
+			newnode->startTime = current->startTime;
+			newnode->endTime = current->endTime;
+
+			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
+			while (incurrent != NULL)
+			{
+				infollow = incurrent;
+				incurrent = incurrent->next;
+			}
+			newnode->next = incurrent;
+
+			if (incurrent == tvlist)
+			{
+				tvlist = newnode;
+			}
+			else
+			{
+				follow->next = newnode;
+			}
+		}
+
+		else if (strcmp(current->usethings, "인덕션") == 0)
+		{
+			incurrent = tvlist;
+			infollow = tvlist;
+			strcpy(newnode->inroom, current->inroom);
+			strcpy(newnode->roomnumber, current->roomnumber);
+			strcpy(newnode->usethings, current->usethings);
+			newnode->difTime = current->difTime;
+			newnode->useday = current->useday;
+			newnode->startTime = current->startTime;
+			newnode->endTime = current->endTime;
+
+			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
+			while (incurrent != NULL)
+			{
+				infollow = incurrent;
+				incurrent = incurrent->next;
+			}
+			newnode->next = incurrent;
+
+			if (incurrent == tvlist)
+			{
+				tvlist = newnode;
+			}
+			else
+			{
+				follow->next = newnode;
+			}
+		}
+
+
+
+		else if ((strcmp(current->usethings, "전등") == 0) && (strcmp(current->inroom, "Room1") == 0))
+		{
+			incurrent = tvlist;
+			infollow = tvlist;
+			strcpy(newnode->inroom, current->inroom);
+			strcpy(newnode->roomnumber, current->roomnumber);
+			strcpy(newnode->usethings, current->usethings);
+			newnode->difTime = current->difTime;
+			newnode->useday = current->useday;
+			newnode->startTime = current->startTime;
+			newnode->endTime = current->endTime;
+
+			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
+			while (incurrent != NULL)
+			{
+				infollow = incurrent;
+				incurrent = incurrent->next;
+			}
+			newnode->next = incurrent;
+
+			if (incurrent == tvlist)
+			{
+				tvlist = newnode;
+			}
+			else
+			{
+				follow->next = newnode;
+			}
+		}
+
+		else if ((strcmp(current->usethings, "전등") == 0) && (strcmp(current->inroom, "Room2") == 0))
+		{
+			incurrent = tvlist;
+			infollow = tvlist;
+			strcpy(newnode->inroom, current->inroom);
+			strcpy(newnode->roomnumber, current->roomnumber);
+			strcpy(newnode->usethings, current->usethings);
+			newnode->difTime = current->difTime;
+			newnode->useday = current->useday;
+			newnode->startTime = current->startTime;
+			newnode->endTime = current->endTime;
+
+			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
+			while (incurrent != NULL)
+			{
+				infollow = incurrent;
+				incurrent = incurrent->next;
+			}
+			newnode->next = incurrent;
+
+			if (incurrent == tvlist)
+			{
+				tvlist = newnode;
+			}
+			else
+			{
+				follow->next = newnode;
+			}
+		}
+
+		else if ((strcmp(current->usethings, "전등") == 0) && (strcmp(current->inroom, "Room3") == 0))
+		{
+			incurrent = tvlist;
+			infollow = tvlist;
+			strcpy(newnode->inroom, current->inroom);
+			strcpy(newnode->roomnumber, current->roomnumber);
+			strcpy(newnode->usethings, current->usethings);
+			newnode->difTime = current->difTime;
+			newnode->useday = current->useday;
+			newnode->startTime = current->startTime;
+			newnode->endTime = current->endTime;
+
+			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
+			while (incurrent != NULL)
+			{
+				infollow = incurrent;
+				incurrent = incurrent->next;
+			}
+			newnode->next = incurrent;
+
+			if (incurrent == tvlist)
+			{
+				tvlist = newnode;
+			}
+			else
+			{
+				follow->next = newnode;
+			}
+		}
+
+		else if ((strcmp(current->usethings, "전등") == 0) && (strcmp(current->inroom, "Kitchen") == 0))
+		{
+			incurrent = tvlist;
+			infollow = tvlist;
+			strcpy(newnode->inroom, current->inroom);
+			strcpy(newnode->roomnumber, current->roomnumber);
+			strcpy(newnode->usethings, current->usethings);
+			newnode->difTime = current->difTime;
+			newnode->useday = current->useday;
+			newnode->startTime = current->startTime;
+			newnode->endTime = current->endTime;
+
+			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
+			while (incurrent != NULL)
+			{
+				infollow = incurrent;
+				incurrent = incurrent->next;
+			}
+			newnode->next = incurrent;
+
+			if (incurrent == tvlist)
+			{
+				tvlist = newnode;
+			}
+			else
+			{
+				follow->next = newnode;
+			}
+		}
+
+		else if ((strcmp(current->usethings, "전등") == 0) && (strcmp(current->inroom, "Livingroom전등") == 0))
+		{
+			incurrent = tvlist;
+			infollow = tvlist;
+			strcpy(newnode->inroom, current->inroom);
+			strcpy(newnode->roomnumber, current->roomnumber);
+			strcpy(newnode->usethings, current->usethings);
+			newnode->difTime = current->difTime;
+			newnode->useday = current->useday;
+			newnode->startTime = current->startTime;
+			newnode->endTime = current->endTime;
+
+			//각 기기에 맞는 알맞은 연결리스트에다 구분하고 시간 순으로 나열해 넣습니다.
+			while (incurrent != NULL)
+			{
+				infollow = incurrent;
+				incurrent = incurrent->next;
+			}
+			newnode->next = incurrent;
+
+			if (incurrent == tvlist)
+			{
+				tvlist = newnode;
+			}
+			else
+			{
+				follow->next = newnode;
+			}
+		}
+
+		else
+		{
+
+		}
+
+
+
+		follow = current;
+		current = current->next;
+	}
+
+	PoweroffNODE* tvwalker = tvlist, * inductionwalker = inductionlist, * refrewalker = refrelist, * washerwalker = washerlist, * r1walker = r1list, * r2walker = r2list, * r3walker = r3list, * livwalker = livinglist, * kitwalker = kitchenlist;
+
+	int tvcount[18][2] = {0, };
+	int inductioncount[18][2] = {0, };
+	int refrecount[18][2] = {0, };
+	int washercount[18][2] = {0, };
+	int r1count[18][2] = {0, };
+	int r2count[18][2] = {0, };
+	int r3count[18][2] = {0, };
+	int livcount[18][2] = {0, };
+	int kitcount[18][2] = {0, };
+	
+	
+	//TV
+	while (tvwalker != NULL)
+	{
+		for (int i = 0; i < 18; i++)
+		{
+			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
+			if ((21600+(3600*i) <= tvwalker->startTime) && (tvwalker->startTime <= 25200+(3600 * i)))
+			{
+				//카운트를 하나 해줍니다.
+				tvcount[i][0] = tvcount[i][0] + 1;
+				//오랜 시간동안 사용한 제품을 선정하기 위한 용도
+				if (tvcount[i][1] < tvwalker->difTime)
+				{
+					tvcount[i][1] = tvwalker->difTime;
+				}
+
+			}
+		}
+		
+
+		tvwalker = tvwalker->next;
+	}
+
+	//인덕션
+	while (inductionwalker != NULL)
+	{
+		for (int i = 0; i < 18; i++)
+		{
+			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
+			if ((21600 + (3600 * i) <= inductionwalker->startTime) && (inductionwalker->startTime <= 25200 + (3600 * i)))
+			{
+				//카운트를 하나 해줍니다.
+				inductioncount[i][0] = inductioncount[i][0] + 1;
+				//오랜 시간동안 사용한 제품을 선정하기 위한 용도
+				if (inductioncount[i][1] < inductionwalker->difTime)
+				{
+					inductioncount[i][1] = inductionwalker->difTime;
+				}
+
+			}
+		}
+
+
+		inductionwalker = inductionwalker->next;
+	}
+
+	//냉장고
+	while (refrewalker != NULL)
+	{
+		for (int i = 0; i < 18; i++)
+		{
+			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
+			if ((21600 + (3600 * i) <= refrewalker->startTime) && (refrewalker->startTime <= 25200 + (3600 * i)))
+			{
+				//카운트를 하나 해줍니다.
+				refrecount[i][0] = refrecount[i][0] + 1;
+				//오랜 시간동안 사용한 제품을 선정하기 위한 용도
+				if (refrecount[i][1] < refrewalker->difTime)
+				{
+					refrecount[i][1] = refrewalker->difTime;
+				}
+
+			}
+		}
+
+
+		refrewalker = refrewalker->next;
+	}
+
+	//세탁기
+	while (washerwalker != NULL)
+	{
+		for (int i = 0; i < 18; i++)
+		{
+			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
+			if ((21600 + (3600 * i) <= washerwalker->startTime) && (washerwalker->startTime <= 25200 + (3600 * i)))
+			{
+				//카운트를 하나 해줍니다.
+				washercount[i][0] = washercount[i][0] + 1;
+				//오랜 시간동안 사용한 제품을 선정하기 위한 용도
+				if (washercount[i][1] < washerwalker->difTime)
+				{
+					washercount[i][1] = washerwalker->difTime;
+				}
+
+			}
+		}
+
+
+		washerwalker = washerwalker->next;
+	}
+	
+	//방1
+	while (r1walker != NULL)
+	{
+		for (int i = 0; i < 18; i++)
+		{
+			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
+			if ((21600 + (3600 * i) <= r1walker->startTime) && (r1walker->startTime <= 25200 + (3600 * i)))
+			{
+				//카운트를 하나 해줍니다.
+				r1count[i][0] = r1count[i][0] + 1;
+				//오랜 시간동안 사용한 제품을 선정하기 위한 용도
+				if (r1count[i][1] < r1walker->difTime)
+				{
+					r1count[i][1] = r1walker->difTime;
+				}
+
+			}
+		}
+
+
+		r1walker = r1walker->next;
+	}
+
+	//방2
+	while (r2walker != NULL)
+	{
+		for (int i = 0; i < 18; i++)
+		{
+			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
+			if ((21600 + (3600 * i) <= r2walker->startTime) && (r2walker->startTime <= 25200 + (3600 * i)))
+			{
+				//카운트를 하나 해줍니다.
+				r2count[i][0] = r2count[i][0] + 1;
+				//오랜 시간동안 사용한 제품을 선정하기 위한 용도
+				if (r2count[i][1] < r2walker->difTime)
+				{
+					r2count[i][1] = r2walker->difTime;
+				}
+
+			}
+		}
+
+
+		r2walker = r2walker->next;
+	}
+	
+	//방3
+	while (r3walker != NULL)
+	{
+		for (int i = 0; i < 18; i++)
+		{
+			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
+			if ((21600 + (3600 * i) <= r3walker->startTime) && (r3walker->startTime <= 25200 + (3600 * i)))
+			{
+				//카운트를 하나 해줍니다.
+				r3count[i][0] = r3count[i][0] + 1;
+				//오랜 시간동안 사용한 제품을 선정하기 위한 용도
+				if (r3count[i][1] < r3walker->difTime)
+				{
+					r3count[i][1] = r3walker->difTime;
+				}
+
+			}
+		}
+
+
+		r3walker = r3walker->next;
+	}
+	
+	//거실
+	while (livwalker != NULL)
+	{
+		for (int i = 0; i < 18; i++)
+		{
+			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
+			if ((21600 + (3600 * i) <= livwalker->startTime) && (livwalker->startTime <= 25200 + (3600 * i)))
+			{
+				//카운트를 하나 해줍니다.
+				livcount[i][0] = livcount[i][0] + 1;
+				//오랜 시간동안 사용한 제품을 선정하기 위한 용도
+				if (livcount[i][1] < livwalker->difTime)
+				{
+					livcount[i][1] = livwalker->difTime;
+				}
+
+			}
+		}
+
+
+		livwalker = livwalker->next;
+	}
+
+	//부엌
+	while (kitwalker != NULL)
+	{
+		for (int i = 0; i < 18; i++)
+		{
+			//6시부터~24시까지 1시간 씩 나눠서 시간대별 겹치는 물건이 가장 많은 것을 선별하기 위한 기능
+			if ((21600 + (3600 * i) <= kitwalker->startTime) && (kitwalker->startTime <= 25200 + (3600 * i)))
+			{
+				//카운트를 하나 해줍니다.
+				kitcount[i][0] = kitcount[i][0] + 1;
+				//오랜 시간동안 사용한 제품을 선정하기 위한 용도
+				if (kitcount[i][1] < kitwalker->difTime)
+				{
+					kitcount[i][1] = kitwalker->difTime;
+				}
+
+			}
+		}
+
+
+		kitwalker = kitwalker->next;
+	}
+
+
+
+	return inlist;
 }
