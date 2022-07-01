@@ -1,4 +1,5 @@
 ﻿//2019243064 박규민 - 06.19 Test Debug End...
+// 
 //이번에 정말 열심히 제작한 코드들 중 하나라고 생각되어집니다.
 //처음 기초프로젝트 주제 정할때와 제가 제작하면서 많이 걱정했던 것이 남들과는 다르게 게임도 아니고 그렇게 어떻게 보면 작은 것일수도 있지만
 //저는 남들이 하지 않는 것과 인터넷에 없고 오직 제가 새롭게 창안+ 실용적인 아이디어를 고민하며 이걸 선택했습니다.
@@ -80,34 +81,34 @@ typedef struct PoweroffNODE
 
 
 
-int ResetData();
+int ResetData();		//한 번 기존 데이터가 있는 것들을 지우고 새롭게 만들어주는 함수
 
 int loginsys(char userid[20], char userpw[30]);		//로그인함수
 
 int signup(char room[10], char households[10], char createid[20], char createpw[30]);		//회원가입함수
 
-int findidsys(char findroom[10], char findholds[10]);
+int findidsys(char findroom[10], char findholds[10]);		//ID 찾아주는 함수
 
-int findpwsys(char findid[20]);
+int findpwsys(char findid[20]);		//PW 찾아주는 함수
 
 //데이터 생성 함수
-int	Room1LightDataCreate(char apartroom[6]);
+int	Room1LightDataCreate(char apartroom[6]);		//방1 전등
 
-int	Room2LightDataCreate(char apartroom[6]);
+int	Room2LightDataCreate(char apartroom[6]);		//방2 전등
 
-int	Room3LightDataCreate(char apartroom[6]);
+int	Room3LightDataCreate(char apartroom[6]);		//방3 전등
 
-int KitchenLightDataCreate(char apartroom[6]);
+int KitchenLightDataCreate(char apartroom[6]);		//부엌 전등
 
-int	LivingroomLightDataCreate(char apartroom[6]);
+int	LivingroomLightDataCreate(char apartroom[6]);		//거실 전등
 
-int InductionDataCreate(char apartroom[6]);
+int InductionDataCreate(char apartroom[6]);		//인덕션 사용
 
-int WahserDataCreate(char apartroom[6]);
+int WahserDataCreate(char apartroom[6]);		//세탁기 사용
 
-int RefrigeratorDataCreate(char apartroom[6]);
+int RefrigeratorDataCreate(char apartroom[6]);	//냉장고 사용
 
-int TVDataCreate(char apartroom[6]);
+int TVDataCreate(char apartroom[6]);		//티비 사용
 
 //사용 전력량 제일 많은 기기 순
 TopUsageNODE* TopUsage(TopUsageNODE* list,char loginid[10]);
@@ -349,14 +350,14 @@ int main()
 		printf("선택=> ");
 		scanf("%d",	&cuschoice);
 
-		if (cuschoice == 1)
+		if (cuschoice == 1)		//전력소모 TOP 안내
 		{
 			list=TopUsage(list, takeroom);
 			system("pause");
 
 		}
 
-		else if (cuschoice == 2)
+		else if (cuschoice == 2)		//총 사용 전력 안내
 		{
 			totalList = TotalElec(totalList, takeroom);
 			totalFList = TotalElecList(totalFList, totalList, ApartRoom,takeroom);
@@ -364,21 +365,21 @@ int main()
 			system("pause");
 		}
 
-		else if (cuschoice == 3)
+		else if (cuschoice == 3)		//사용자 패턴 분석 및 서비스 추천
 		{
 			serList = UserService(serList, takeroom);
 			timeList=timeService(timeList,serList, takeroom);
 			system("pause");
 		}
 
-		else if (cuschoice == 4)
+		else if (cuschoice == 4)		//전력 낭비 기기 파악
 		{
 			powerList = Userpoweroff(powerList,takeroom, changeliving);
 			poweroffFList = UserpoweroffList(poweroffFList,powerList,takeroom, changeliving);
 			system("pause");
 		}
 
-		else if (cuschoice == 0)
+		else if (cuschoice == 0)		//시스템 종료
 		{
 			printf("시스템을 종료합니다...");
 			exit(0);
@@ -773,8 +774,8 @@ int	Room1LightDataCreate(char apartroom[6])
 					sprintf(minval, "%d", startmin);
 					sprintf(secval, "%d", startsec);
 
-
-					if ((strcmp(apartroom, "101") == 0) && (startcount == 0))	//처음 스타트 부분에 공백이 생기면 안되니까 없애기 위한 조건을 넣었음
+					//자꾸 스타트 부분에 공백(한 줄 \n 이꺼 때문에)이 생겨서 따로 101호 처음 부분 시작할 때 조건을 걸어서 안생기도록 진행하였습니다..!
+					if ((strcmp(apartroom, "101") == 0) && (startcount == 0))	//처음 스타트 부분에 공백이 생기면 안되니까 없애기 위한 조건을 넣었습니다
 					{
 						startcount = startcount + 1;
 						fputs("호수:", fp);
@@ -1744,7 +1745,7 @@ int	LivingroomLightDataCreate(char apartroom[6])
 	return 0;
 }
 
-//인덕션 데이터 생성		//인덕션 데이터 생성		//인덕션 데이터 생성		//인덕션 데이터 생성		//인덕션 데이터 생성		//인덕션 데이터 생성		
+//ㄹ 데이터 생성		//인덕션 데이터 생성		//인덕션 데이터 생성		//인덕션 데이터 생성		//인덕션 데이터 생성		//인덕션 데이터 생성		
 int InductionDataCreate(char apartroom[6])
 {
 	TN* timelist;		//시간 담아둘 리스트 선언
@@ -2059,7 +2060,7 @@ int WahserDataCreate(char apartroom[6])
 
 				room1_1temp = (room1_hour * 60 * 60) + (room1_min * 60) + (room1_sec);		//킨 시간을 초로 변환
 
-				room1_hourlong = 1;		//시간 지속시간 0시간으로 고정
+				room1_hourlong = 1;		//시간 지속시간1시간으로 고정
 				kit_endmin = rand() % 61;	//끄는 분 생성
 				kit_endsec = rand() % 61;	//끄는 초 생성
 
@@ -4684,6 +4685,9 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 		
 	}
 
+
+	//배열에다가 카운트를 해놓고 배열 각 시간대별로 합친 것(06시~24시)들 중 다 더하여
+	// 카운트가 가장 총합 중 많이 된 것이 시간대 파악이 되도록 하였습니다.
 	int max = 0;
 	int timetable = 0;
 	int index = 0;
@@ -4695,6 +4699,7 @@ PoweroffNODE* UserpoweroffList(PoweroffNODE* inlist, PoweroffNODE* list, char lo
 			timetable = f;
 		}
 	}
+
 
 	for (int s = 0; s < 9; s++)
 	{
