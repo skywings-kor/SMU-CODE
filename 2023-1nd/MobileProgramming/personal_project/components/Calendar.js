@@ -20,18 +20,18 @@ export default function CalendarScreen() {
       const userDocRef = doc(db, `MobileAssignment/${uid}`);
       const datesCollectionRef = collection(userDocRef, 'dates');
       const querySnapshot = await getDocs(datesCollectionRef);
-
+  
       const todosData = [];
-      const markedDatesData = {};
+      let markedDatesData = {}; // 변경된 부분
       querySnapshot.forEach((doc) => {
         const date = doc.id;
         const task = doc.data().task || '';
         todosData.push({ date, task });
-        markedDatesData[date] = { marked: true, dotColor: 'blue' }; // 변경된 부분
+        markedDatesData[date] = { marked: true, dotColor: 'blue' };
       });
-
+  
       setTodos(todosData);
-      setMarkedDates(markedDatesData); // 변경된 부분
+      setMarkedDates({ ...markedDatesData }); // 변경된 부분
     } catch (error) {
       console.log('Error loading todos:', error);
     }
