@@ -12,13 +12,7 @@ import {getFirestore,doc, setDoc,collection, addDoc,getDoc, query, orderBy, limi
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyA7SdM2Gqr_G2L9P9DC0VPynV4aVJ1SBZY",
-  authDomain: "seouldatacontest.firebaseapp.com",
-  projectId: "seouldatacontest",
-  storageBucket: "seouldatacontest.appspot.com",  
-  messagingSenderId: "527509646555",
-  appId: "1:527509646555:web:c4951f87a9a2810207b0fe",
-  measurementId: "G-BQF79NVXM6"
+  
 };
 
 // Initialize Firebase
