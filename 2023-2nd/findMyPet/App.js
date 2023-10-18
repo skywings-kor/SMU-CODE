@@ -53,12 +53,17 @@ const App =()=>{
           }}
         >
           <Tab.Screen
-            name="mainTab"
+            name="Main"
             component={MainScreen}
           />
 
           <Tab.Screen
-            name="마이페이지"
+            name="MyPage"
+            component={UI}
+          />
+
+          <Tab.Screen
+            name="PET등록"
             component={UI}
           />
 
