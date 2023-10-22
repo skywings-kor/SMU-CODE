@@ -60,4 +60,4 @@ buck-out/
 /ios/Pods/
 /vendor/bundle/
 
-/components/chat.js
+firebaseConfig.js

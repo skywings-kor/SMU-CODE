@@ -1,10 +1,14 @@
 import React, {useState} from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 
 import SignUp from "./components/SignUp"
 import Login from "./components/Login"
 import HM from "./components/Home"
-import UI from "./components/User_profile"
+import UI from "./components/MyPage"
+import AddPet from "./components/AddPet"
+import Home from "./components/Home"
+import Detail_Page from "./components/Detail_Page"
+import Chat_Page from "./components/Chat_Page"
 
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -55,17 +59,55 @@ const App =()=>{
           <Tab.Screen
             name="Main"
             component={MainScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Image
+                  source={require('./assets/homeIcon.png')}
+                  style={{ width: 30, height: 30 }}
+                />
+              ),
+            }}
           />
 
           <Tab.Screen
             name="MyPage"
             component={UI}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Image
+                  source={require('./assets/mypageIcon.png')}
+                  style={{ width: 30, height: 30 }}
+                />
+              ),
+            }}
           />
 
           <Tab.Screen
             name="PET등록"
-            component={UI}
+            component={AddPet}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Image
+                  source={require('./assets/addIcon.png')}
+                  style={{ width: 30, height: 30 }}
+                />
+              ),
+            }}
           />
+
+          <Tab.Screen
+            name="챗봇"
+            component={Chat_Page}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Image
+                  source={require('./assets/chatIcon.png')}
+                  style={{ width: 30, height: 30 }}
+                />
+              ),
+            }}
+          />
+          
 
         </Tab.Navigator>
       ) : (
@@ -78,8 +120,11 @@ const App =()=>{
           <Stack.Screen
             name="SignUp"
             component={SignUp}
-            options={{ headerShown: false }}
-          />
+            options={{ headerShown: true }}
+          /> 
+
+
+          
         </Stack.Navigator>
       )}
     </NavigationContainer>
@@ -96,7 +141,7 @@ const MainScreen = () => {
         name="main"
         component={HM}
         options={{
-          headerTitle: 'TripGO',
+          headerTitle: 'FindMyPet',
           headerTitleStyle: {
             fontSize: 24,
             color: 'rgb(182,20,45)',
@@ -104,6 +149,10 @@ const MainScreen = () => {
           },
         }}
       />
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Detail_Page" component={Detail_Page} />
+      <Stack.Screen name="MyPage" component={UI} />
+      
     </Stack.Navigator>
   );
 };

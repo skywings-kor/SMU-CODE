@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet,Image } from 'react-native';
 import { firestoreDB,createUserWithEmailAndPassword,firebaseAuth , addDoc,doc,setDoc,getDoc} from '../firebaseConfig';
 
 import { useNavigation } from '@react-navigation/native';
@@ -9,18 +9,30 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
+  const [nickName, setnickName] = useState('');
+
   const auth = firebaseAuth;
   const db = firestoreDB
-    
+
+
+  const handleNickName = (value) => {
+    setnickName(value);
+  };
 
   const handleSignup = () => {
+    if(nickName.length < 4){
+      alert('닉네임은 최소 4자 이상이어야 합니다.')
+      return;
+    }
+    
+
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const uid = userCredential.user.uid;
         const userDocRef = doc(db, `findMyPet/${uid}`)
         const userData = {
-            time: '',
-            task: '',
+            userID: uid,
+            nickname: nickName,
         }
 
         //파이어스토어한테 이제 보냅니다
@@ -47,7 +59,9 @@ const SignUp = () => {
           alert('이미 사용 중인 이메일입니다.');
         } else if (errorCode === 'auth/invalid-email') {
           alert('유효하지 않은 이메일입니다.');
-        } else {
+        }
+        
+        else {
           alert(errorMessage);
         }
       });
@@ -55,6 +69,7 @@ const SignUp = () => {
 
   return (
     <View style={styles.container}>
+      <Image source={require('../assets/petLogo.png')} style={styles.logo} />
       <TextInput
         placeholder="Email"
         onChangeText={(text) => setEmail(text)}
@@ -68,10 +83,17 @@ const SignUp = () => {
         secureTextEntry
         style={styles.input}
       />
+      <TextInput
+        placeholder="NickName"
+        onChangeText={(text) => setnickName(text)}
+        value={nickName}
+        style={styles.input}
+      />
       <Button onPress={handleSignup} title="회원가입 진행" color="coral" />
     </View>
   );
 }
+
 export default SignUp;
 
 
@@ -79,18 +101,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    padding: 16,
+    backgroundColor: 'white',
   },
-  title: {
-    fontSize: 24,
+  logo: {
+    width: 300,
+    height: 300,
     marginBottom: 20,
+    alignSelf: 'center',
   },
   input: {
-    width: '80%',
     height: 40,
-    marginBottom: 10,
+    borderColor: 'gray',
     borderWidth: 1,
-    borderColor: '#ccc',
-    paddingHorizontal: 10,
+    marginBottom: 12,
+    padding: 10,
+    borderRadius: 8,
   },
 });
+

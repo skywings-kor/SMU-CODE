@@ -34,6 +34,7 @@ export default function Login({ handleLogin, navigation }) {
 
   return (
     <View style={styles.container}>
+      <Image source={require('../assets/Login.png')} style={styles.logo} />
 
       <TextInput
         style={styles.input}
@@ -64,6 +65,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'white',
   },
   logo: {
     width: '59.3%',
@@ -93,5 +95,11 @@ const styles = StyleSheet.create({
     height: 50,
     marginBottom: 10,
     borderRadius: 20,
+  },
+  logo: {
+    width: 300,
+    height: 300,
+    marginBottom: 20,
+    alignSelf: 'center',
   },
 });
